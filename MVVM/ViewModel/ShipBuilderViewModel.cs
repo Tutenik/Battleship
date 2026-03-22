@@ -58,7 +58,7 @@ namespace Battleship.MVVM.ViewModel
             );
 
             SaveShipsCommand = new RelayCommand(_ => 
-                ShipService.SaveShips(Path.Combine(folder, $"{ShipSetName.Trim()}.json"), 
+                ShipService.SaveShips(Path.Combine(folder, $"{ShipSetName?.Trim()}.json"), 
                 ShipService.DetectShips(gab.Cells)),
                 _ => !string.IsNullOrWhiteSpace(ShipSetName)
             );

@@ -71,8 +71,8 @@ namespace Battleship.MVVM.ViewModel
 
         private void UpdateCell()
         {
-            Row = _cell.Y;
-            Column = _cell.X;
+            Row = _cell.X;
+            Column = _cell.Y;
             ImagePath = _cell.Status switch
             {
                 CellStatus.Hit => "/Resources/Images/HitCell.png",
