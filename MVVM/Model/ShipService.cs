@@ -76,7 +76,7 @@ namespace Battleship.MVVM.Model
         {
             var dto = ships.Select(ship => new ShipDto
             {
-                Positions = ship.Cells
+                Positions = GetRelativePositions(ship)
                     .Select(p => new PositionDto { X = p.X, Y = p.Y })
                     .ToList()
             }).ToList();
@@ -85,8 +85,6 @@ namespace Battleship.MVVM.Model
             {
                 WriteIndented = true
             });
-
-            MessageBox.Show(path);
 
             File.WriteAllText(path, json);
         }
@@ -102,6 +100,45 @@ namespace Battleship.MVVM.Model
 
             return [.. dto.Select(d => new Ship([.. d.Positions.Select(p => new Cell(p.X, p.Y))])
          )];
+        }
+
+        public static List<Cell> GetRelativePositions(Ship ship)
+        {
+            if (ship.Cells == null || ship.Cells.Count == 0)
+                return new List<Cell>();
+
+            // Find top-left (min X, then min Y)
+            var origin = ship.Cells
+                .OrderBy(c => c.X)
+                .ThenBy(c => c.Y)
+                .First();
+
+            return ship.Cells
+                .Select(c => new Cell
+                (
+                    c.X - origin.X,
+                    c.Y - origin.Y
+                ))
+                .ToList();
+        }
+
+        public static void Rotate90Clockwise(List<Cell> cells)
+        {
+            foreach (var c in cells)
+            {
+                int x = c.X;
+                c.X = c.Y;
+                c.Y = -x;
+            }
+
+            int minX = cells.Min(c => c.X);
+            int minY = cells.Min(c => c.Y);
+
+            foreach (var c in cells)
+            {
+                c.X -= minX;
+                c.Y -= minY;
+            }
         }
     }
 }
