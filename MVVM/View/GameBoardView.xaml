@@ -7,13 +7,12 @@
              xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d">
-
-    <Grid Background="White">
+    <Grid>
         <ItemsControl ItemsSource="{Binding Cells}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid Rows="10"
-                                 Columns="10" />
+                    <UniformGrid Rows="{Binding Rows}"
+                                 Columns="{Binding Columns}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -22,8 +21,8 @@
                     <Border BorderBrush="White"
                             BorderThickness="3">
                         <Image Source="{Binding ImagePath}"
-                               Width="100"
-                               Height="100" />
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch" />
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseEnter">

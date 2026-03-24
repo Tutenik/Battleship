@@ -37,12 +37,13 @@ namespace Battleship.MVVM.ViewModel
         public RelayCommand StopPaintingCommand { get; set; }
         public RelayCommand SaveShipsCommand { get; set; }
 
-        public static GameBoard gab = new(10);
+        public GameBoard gab;
 
         public ShipPainter sp;
 
         public ShipBuilderViewModel()
         {
+            gab = new(10);
             GameBoardVM = new GameBoardViewModel(gab);
             GridView = GameBoardVM;
 
@@ -51,9 +52,9 @@ namespace Battleship.MVVM.ViewModel
             PaintCommand = new RelayCommand(_ => sp.PaintCell());
             StopPaintingCommand = new RelayCommand(_ => sp.StopPaintingCell());
 
-            //PaintCommand = new RelayCommand();
             string folder = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
+                "Resources",
                 "ShipTemplates"
             );
 
