@@ -1,4 +1,5 @@
 ﻿using Battleship.Core;
+using System.Windows;
 
 namespace Battleship.MVVM.ViewModel
 {
@@ -27,17 +28,22 @@ namespace Battleship.MVVM.ViewModel
 
         public MainViewModel()
         {
-            HomeVM = new HomeViewModel();
+            HomeVM = new HomeViewModel(this);
             ShipBuilderVM = new ShipBuilderViewModel();
             SettingsVM = new SettingsViewModel();
             AboutVM = new AboutViewModel();
 
             CurrentView = HomeVM;
 
-            HomeViewCommand = new RelayCommand(o => { CurrentView = HomeVM; });
+            HomeViewCommand = new RelayCommand(o => { if (HomeVM.PrepGameVM == null) { CurrentView = HomeVM; } else CurrentView = HomeVM.PrepGameVM; });
             ShipBuilderCommand = new RelayCommand(o => { CurrentView = ShipBuilderVM; });
             SettingsViewCommand = new RelayCommand(o => { CurrentView = SettingsVM; });
             AboutViewCommand = new RelayCommand(o => { CurrentView = AboutVM; });
+        }
+
+        public void ChangeCurrentView(object newView)
+        {
+            CurrentView = newView;
         }
     }
 }

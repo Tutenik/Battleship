@@ -31,6 +31,10 @@
             <DataTemplate DataType="{x:Type viewModel:GameBoardViewModel}">
                 <view:GameBoardView />
             </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:PrepGameViewModel}">
+                <view:PrepGameView />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

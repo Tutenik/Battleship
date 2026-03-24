@@ -16,11 +16,17 @@
     <None Remove="Resources\Images\MissedCell.svg" />
     <None Remove="Resources\Images\ShipCell.png" />
     <None Remove="Resources\Images\ShipCell.svg" />
+    <None Remove="Resources\ShipTemplates\Default.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ShipTemplates\Default.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Resources\Fonts\" />
-    <Folder Include="Resources\ShipTemplates\" />
   </ItemGroup>
 
   <ItemGroup>

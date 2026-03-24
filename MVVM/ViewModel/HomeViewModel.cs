@@ -1,8 +1,90 @@
 ﻿using Battleship.Core;
+using Battleship.MVVM.Model;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Battleship.MVVM.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
+        private readonly string _folderPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Resources",
+                "ShipTemplates"
+            );
+        private FileSystemWatcher _watcher;
+
+        private readonly ObservableCollection<ShipSet> _shipSets;
+        public ObservableCollection<ShipSet> ShipSets => _shipSets;
+        public RelayCommand PlayGameCommand { get; set; }
+
+        public PrepGameViewModel PrepGameVM { get; set; }
+
+        private ShipSet _celectedItem;
+        public ShipSet SelectedItem
+        {
+            get
+            {
+                return _celectedItem;
+            }
+            set
+            {
+                _celectedItem = value;
+                OnPropertyChanged(nameof(SelectedItem));
+            }
+        }
+
+        public HomeViewModel(MainViewModel mainViewModel)
+        {
+            _shipSets = new ObservableCollection<ShipSet>();
+            InitShipSets();
+            SelectedItem = _shipSets[0];
+            SetupWatcher();
+
+            PlayGameCommand = new RelayCommand(_ => { 
+                PrepGameVM = new PrepGameViewModel(SelectedItem);
+                mainViewModel.ChangeCurrentView(PrepGameVM);
+            });
+        }
+
+        private void InitShipSets()
+        {
+            var filePaths = Directory.GetFiles(_folderPath, "*.json");
+            foreach (var file in filePaths)
+            {
+                _shipSets.Add(new ShipSet(file));
+            }
+        }
+
+        private void SetupWatcher()
+        {
+            _watcher = new FileSystemWatcher(_folderPath, "*.json");
+
+            _watcher.Created += OnFileCreated;
+            _watcher.Deleted += OnFileDeleted;
+
+            _watcher.EnableRaisingEvents = true;
+        }
+
+        private void OnFileCreated(object sender, FileSystemEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _shipSets.Add(new ShipSet(e.FullPath));
+            });
+        }
+
+        private void OnFileDeleted(object sender, FileSystemEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var item = _shipSets.FirstOrDefault(s => s.ShipSetPath == e.FullPath);
+                if (item != null)
+                    _shipSets.Remove(item);
+            });
+        }
     }
 }
