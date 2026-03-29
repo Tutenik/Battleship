@@ -4,16 +4,34 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Battleship.MVVM.View"
+             xmlns:behaviour="clr-namespace:Battleship.MVVM.Behaviours"
              xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="460"
-             d:DesignWidth="800">
+             d:DesignWidth="800"
+             x:Name="Window">
+
+    <UserControl.Resources>
+        <local:AddConverter x:Key="AddConverter"></local:AddConverter>
+        <local:RectConverter x:Key="RectConverter"></local:RectConverter>
+    </UserControl.Resources>
+
+    <UserControl.InputBindings>
+        <KeyBinding Key="R"
+                    Command="{Binding RotateShipCommand}" />
+    </UserControl.InputBindings>
 
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
         <ListBox ItemsSource="{Binding Ships}"
                  SelectedItem="{Binding SelectedShip, Mode=TwoWay}">
@@ -37,8 +55,7 @@
                                                 BorderThickness="3">
                                             <Image Source="{Binding ImagePath}"
                                                    MaxWidth="20"
-                                                   MaxHeight="20"/>
-
+                                                   MaxHeight="20" />
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -49,9 +66,98 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Grid.Row="1">
+            <Button 
+                    Content="Randomize"
+                    Command="{Binding RandomizeCommand}"
+                    Style="{StaticResource RoundedGradientButton}">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0 0"
+                                         EndPoint="1 2">
+                        <GradientStop Color="#4e99ff"
+                                      Offset="0.1" />
+                        <GradientStop Color="#FF117737"
+                                      Offset="1" />
+                    </LinearGradientBrush>
+                </Button.Background>
+
+                <Button.Foreground>
+                    <SolidColorBrush Color="White" />
+                </Button.Foreground>
+            </Button>
+            
+            <Button Content="Ready"
+                    Command="{Binding ReadyCommand}"
+                    Style="{StaticResource RoundedGradientButton}">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0 0"
+                                         EndPoint="1 2">
+                        <GradientStop Color="#4eff91"
+                                      Offset="0" />
+                        <GradientStop Color="#FF117737"
+                                      Offset="0.7" />
+                    </LinearGradientBrush>
+                </Button.Background>
+
+                <Button.Foreground>
+                    <SolidColorBrush Color="White" />
+                </Button.Foreground>
+            </Button>
+                    
+        </StackPanel>
+        
         <ContentControl Grid.Column="1"
-                        Content="{Binding GameBoard}"
+                        Grid.RowSpan="99"
+                        x:Name="GameGrid"
+                        Content="{Binding GameBoardVM}"
                         Width="400"
                         Height="400" />
+
+        <Canvas Grid.Column="1"
+                Grid.RowSpan="99"
+                Width="{Binding ActualWidth, ElementName=GameGrid}"
+                Height="{Binding ActualHeight, ElementName=GameGrid}"
+                Background="Transparent">
+
+            <ItemsControl ItemsSource="{Binding HoverShip.Cells}"
+                          Canvas.Top="{Binding TopCanvasPosition}"
+                          Canvas.Left="{Binding LeftCanvasPosition}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="{Binding HoverShip.Rows}"
+                                     Columns="{Binding HoverShip.Columns}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModel:CellViewModel}">
+                        <Image Source="{Binding ImagePath}"
+                               Width="40"
+                               Height="40" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <i:Interaction.Behaviors>
+                <behaviour:MouseTrackingBehavior MousePosition="{Binding MousePosition}" />
+            </i:Interaction.Behaviors>
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseMove">
+                    <i:InvokeCommandAction Command="{Binding MouseMoveCommand}">
+                    </i:InvokeCommandAction>
+                </i:EventTrigger>
+                
+                <i:EventTrigger EventName="MouseLeftButtonUp">
+                    <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}" />
+                </i:EventTrigger>
+                
+                <i:EventTrigger EventName="MouseRightButtonDown">
+                    <i:InvokeCommandAction Command="{Binding MouseRightButtonDownCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Canvas>
     </Grid>
 </UserControl>

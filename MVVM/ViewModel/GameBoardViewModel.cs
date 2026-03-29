@@ -7,8 +7,8 @@ namespace Battleship.MVVM.ViewModel
     public class GameBoardViewModel : ObservableObject
     {
         private GameBoard _gameBoard;
-        private readonly ObservableCollection<CellViewModel> _cells;
 
+        private readonly ObservableCollection<CellViewModel> _cells;
         public IEnumerable<CellViewModel> Cells => _cells; 
 
         private int _rows;
@@ -39,7 +39,6 @@ namespace Battleship.MVVM.ViewModel
         public GameBoardViewModel(GameBoard gameBoard)
         {
             _gameBoard = gameBoard;
-
             Rows = gameBoard.Cells.GetLength(0);
             Columns = gameBoard.Cells.GetLength(1);
 
@@ -49,11 +48,11 @@ namespace Battleship.MVVM.ViewModel
 
         private void InitCells()
         {
-            for (int i = 0; i < Columns; i++)
+            for (int i = 0; i < Rows; i++)
             {
-                for (int j = 0; j < Rows; j++)
+                for (int j = 0; j < Columns; j++)
                 {
-                    _cells.Add(new CellViewModel(_gameBoard.GetCell(j, i)));
+                    _cells.Add(new CellViewModel(_gameBoard.GetCell(i, j)));
                 }
             }
         }

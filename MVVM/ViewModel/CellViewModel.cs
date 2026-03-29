@@ -19,7 +19,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _row = value;
-                OnPropertyChanged(nameof(Row));
+                OnPropertyChanged();
             }
         }
 
@@ -33,7 +33,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _column = value;
-                OnPropertyChanged(nameof(Column));
+                OnPropertyChanged();
             }
         }
 
@@ -47,7 +47,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _imagePath = value;
-                OnPropertyChanged(nameof(ImagePath));
+                OnPropertyChanged();
             }
         }
 
@@ -59,8 +59,8 @@ namespace Battleship.MVVM.ViewModel
         {
             _cell = cell;
 
-            _column = cell.Y;
-            _row = cell.X;
+            _column = cell.Column;
+            _row = cell.Row;
 
             _imagePath = new BitmapImage(new Uri("/Resources/Images/boykis.png", UriKind.Relative));
 
@@ -73,13 +73,14 @@ namespace Battleship.MVVM.ViewModel
 
         private void UpdateCell()
         {
-            Row = _cell.X;
-            Column = _cell.Y;
+            Row = _cell.Row;
+            Column = _cell.Column;
             ImagePath = _cell.Status switch
             {
-                CellStatus.Hit => new BitmapImage( new Uri("/Resources/Images/HitCell.png", UriKind.Relative)),
+                CellStatus.Hit => new BitmapImage(new Uri("/Resources/Images/HitCell.png", UriKind.Relative)),
                 CellStatus.Missed => new BitmapImage(new Uri("/Resources/Images/MissedCell.png", UriKind.Relative)),
-                CellStatus.Ship =>  new BitmapImage(new Uri("/Resources/Images/ShipCell.png", UriKind.Relative)),
+                CellStatus.Ship => new BitmapImage(new Uri("/Resources/Images/ShipCell.png", UriKind.Relative)),
+                CellStatus.ShipNeighbour => new BitmapImage(new Uri("/Resources/Images/btead.png", UriKind.Relative)),
                 _ => new BitmapImage(new Uri("/Resources/Images/boykis.png", UriKind.Relative)),
             };
         }
