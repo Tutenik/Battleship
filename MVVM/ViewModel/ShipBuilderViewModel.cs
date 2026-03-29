@@ -52,15 +52,9 @@ namespace Battleship.MVVM.ViewModel
             PaintCommand = new RelayCommand(_ => sp.PaintCell());
             StopPaintingCommand = new RelayCommand(_ => sp.StopPaintingCell());
 
-            string folder = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Resources",
-                "ShipTemplates"
-            );
-
             SaveShipsCommand = new RelayCommand(_ => 
-                ShipService.SaveShips(Path.Combine(folder, $"{ShipSetName?.Trim()}.json"), 
-                ShipService.DetectShips(gab.Cells)),
+                ShipService.SaveShips($"{ShipSetName?.Trim()}.json", 
+                gab.DetectShips()),
                 _ => !string.IsNullOrWhiteSpace(ShipSetName)
             );
         }

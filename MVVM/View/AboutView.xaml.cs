@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Battleship.MVVM.View
 {
@@ -10,6 +12,14 @@ namespace Battleship.MVVM.View
         public AboutView()
         {
             InitializeComponent();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo(e.Uri.AbsoluteUri);
+            psi.UseShellExecute = true;
+            Process.Start(psi);
+            e.Handled = true;
         }
     }
 }

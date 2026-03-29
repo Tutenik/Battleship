@@ -35,7 +35,10 @@ namespace Battleship.MVVM.ViewModel
 
             CurrentView = HomeVM;
 
-            HomeViewCommand = new RelayCommand(o => { if (HomeVM.PrepGameVM == null) { CurrentView = HomeVM; } else CurrentView = HomeVM.PrepGameVM; });
+            HomeViewCommand = new RelayCommand(o => { 
+                if (HomeVM.PrepGameVM == null) { CurrentView = HomeVM; }
+                else if (HomeVM.PrepGameVM.GameVM == null) { CurrentView = HomeVM.PrepGameVM; }
+                else CurrentView = HomeVM.PrepGameVM.GameVM; });
             ShipBuilderCommand = new RelayCommand(o => { CurrentView = ShipBuilderVM; });
             SettingsViewCommand = new RelayCommand(o => { CurrentView = SettingsVM; });
             AboutViewCommand = new RelayCommand(o => { CurrentView = AboutVM; });

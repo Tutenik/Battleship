@@ -8,24 +8,25 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/ElementTheme/MenuButtonTheme.xaml"/>
-                <ResourceDictionary Source="/Resources/ElementTheme/TextBoxTheme.xaml"/>
+                <ResourceDictionary Source="/Resources/ElementTheme/MenuButtonTheme.xaml" />
+                <ResourceDictionary Source="/Resources/ElementTheme/TextBoxTheme.xaml" />
+                <ResourceDictionary Source="/Resources/ElementTheme/ButtonTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
-                <view:HomeView/>
+                <view:HomeView />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:ShipBuilderViewModel}">
-                <view:ShipBuilderView/>
+                <view:ShipBuilderView />
             </DataTemplate>
-            
+
             <DataTemplate DataType="{x:Type viewModel:SettingsViewModel}">
-                <view:SettingsView/>
+                <view:SettingsView />
             </DataTemplate>
-            
+
             <DataTemplate DataType="{x:Type viewModel:AboutViewModel}">
-                <view:AboutView/>
+                <view:AboutView />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:GameBoardViewModel}">
@@ -34,6 +35,10 @@
 
             <DataTemplate DataType="{x:Type viewModel:PrepGameViewModel}">
                 <view:PrepGameView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:GameViewModel}">
+                <view:GameView />
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

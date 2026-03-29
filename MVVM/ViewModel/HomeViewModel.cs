@@ -10,11 +10,6 @@ namespace Battleship.MVVM.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
-        private readonly string _folderPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "Resources",
-                "ShipTemplates"
-            );
         private FileSystemWatcher _watcher;
 
         private readonly ObservableCollection<ShipSet> _shipSets;
@@ -45,14 +40,14 @@ namespace Battleship.MVVM.ViewModel
             SetupWatcher();
 
             PlayGameCommand = new RelayCommand(_ => { 
-                PrepGameVM = new PrepGameViewModel(SelectedItem);
+                PrepGameVM = new PrepGameViewModel(mainViewModel ,SelectedItem);
                 mainViewModel.ChangeCurrentView(PrepGameVM);
             });
         }
 
         private void InitShipSets()
         {
-            var filePaths = Directory.GetFiles(_folderPath, "*.json");
+            var filePaths = Directory.GetFiles(ShipService.FolderPath, "*.json");
             foreach (var file in filePaths)
             {
                 _shipSets.Add(new ShipSet(file));
@@ -61,7 +56,7 @@ namespace Battleship.MVVM.ViewModel
 
         private void SetupWatcher()
         {
-            _watcher = new FileSystemWatcher(_folderPath, "*.json");
+            _watcher = new FileSystemWatcher(ShipService.FolderPath, "*.json");
 
             _watcher.Created += OnFileCreated;
             _watcher.Deleted += OnFileDeleted;

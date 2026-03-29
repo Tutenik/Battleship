@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Remove="Resources\Images\boykis.png" />
+    <None Remove="Resources\Images\btead.png" />
     <None Remove="Resources\Images\HitCell.png" />
     <None Remove="Resources\Images\HitCell.svg" />
     <None Remove="Resources\Images\MissedCell.png" />
@@ -36,6 +37,9 @@
 
   <ItemGroup>
     <Resource Include="Resources\Images\boykis.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\btead.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\HitCell.png">
