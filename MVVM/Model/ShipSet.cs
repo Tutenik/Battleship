@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.IO;
+﻿using System.IO;
 
 namespace Battleship.MVVM.Model
 {

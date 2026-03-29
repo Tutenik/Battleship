@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Battleship.MVVM.ViewModel;
+using System.Windows;
 
 namespace Battleship.MVVM.Model
 {
@@ -10,6 +7,9 @@ namespace Battleship.MVVM.Model
     {
         public Cell[,] Cells { get; set; }
         private int _size;
+
+        public int Rows => Cells.GetLength(1);
+        public int Columns => Cells.GetLength(0);
 
         public GameBoard(int size)
         {
@@ -32,62 +32,262 @@ namespace Battleship.MVVM.Model
             return cells;
         }
 
-        public Cell GetCell(int x, int y)
+        public void ClearBoard()
         {
-            return Cells[x, y];
+            foreach (var cell in Cells)
+                cell.Status = CellStatus.Empty;
         }
 
-        public bool PlaceShip(Ship ship, int x, int y, int rotation)
+        public Cell GetCell(int row, int column)
         {
-            if (x + ship.Size > _size) return false;
+            return Cells[row, column];
+        }
 
-            // Check if cells are empty
-            for (int i = 0; i < ship.Size; i++)
+        public Cell? TryGetCell(int row, int column)
+        {
+            try
             {
-                if (Cells[x + i, y].Status != CellStatus.Empty)
+                return Cells[row, column];
+            }
+            catch { return null; }
+        }
+
+        public bool PlaceShip(ShipViewModel selectedShip, int startRow, int startColumn)
+        {
+            if (selectedShip == null) return false;
+
+            if (startRow < 0 || startColumn < 0 ||
+                startRow + selectedShip.Rows > Rows ||
+                startColumn + selectedShip.Columns > Columns)
+                return false;
+
+            foreach (var cell in selectedShip.Cells)
+            {
+                int row = startRow + cell.Row;
+                int column = startColumn + cell.Column;
+
+                if (GetCell(row, column).Status == CellStatus.Ship ||
+                    GetCell(row, column).Status == CellStatus.ShipNeighbour)
                     return false;
             }
 
-            // Place ship in cells
-            for (int i = 0; i < ship.Size; i++)
+            var directions = new (int dx, int dy)[]
             {
-                Cells[x + i, y].Status = CellStatus.Ship;
-                ship.Cells.Add(Cells[x + i, y]);
+                    (1, 0),    // right
+                    (-1, 0),   // left
+                    (0, 1),    // down
+                    (0, -1),   // up
+                    (1, 1),    // down-right
+                    (-1, -1),  // up-left
+                    (1, -1),   // up-right
+                    (-1, 1)    // down-left
+            };
+
+            foreach (var cell in selectedShip.Cells)
+            {
+                int row = startRow + cell.Row;
+                int column = startColumn + cell.Column;
+
+
+                foreach (var (dx, dy) in directions)
+                {
+                    var cellPeek = TryGetCell(row + dx, column + dy);
+
+                    if (cellPeek != null && cellPeek.Status != CellStatus.Ship)
+                        cellPeek.Status = CellStatus.ShipNeighbour;
+                }
+
+                GetCell(row, column).Status = CellStatus.Ship;
             }
 
             return true;
         }
 
-        public void RemoveShip(Ship ship)
+        public void RemoveShipFromGrid(Ship ship)
         {
             foreach (var cell in ship.Cells)
             {
-                cell.Status = CellStatus.Empty;
+                GetCell(cell.Row, cell.Column).Status = CellStatus.Empty;
             }
-            ship.Cells.Clear();
-        }
 
-        public bool GetFireShot(int x, int y)
-        {
-            if (Cells[x, y].Status == CellStatus.Ship)
+            foreach (Cell cell in ship.Cells)
             {
-                Cells[x, y].Status = CellStatus.Hit;
-                return true; // Hit
-            }
-            else
-            {
-                Cells[x, y].Status = CellStatus.Missed;
-                return false; // Missed
+                ClearNeighbours(cell.Row, cell.Column);
             }
         }
 
-        internal void Reset()
+        private void ClearNeighbours(int row, int column)
         {
-            for (int i = 0; i < _size; i++)
+            for (int dx = -1; dx <= 1; dx++)
             {
-                for (int j = 0; j < _size; j++)
+                for (int dy = -1; dy <= 1; dy++)
                 {
-                    Cells[i, j].Status = CellStatus.Empty;
+                    int nx = row + dx;
+                    int ny = column + dy;
+
+                    var cell = TryGetCell(nx, ny);
+                    if (cell == null || cell.Status != CellStatus.ShipNeighbour)
+                        continue;
+
+                    if (!HasAdjacentShip(nx, ny))
+                        cell.Status = CellStatus.Empty;
+                }
+            }
+        }
+
+        private bool HasAdjacentShip(int x, int y)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    var neighbour = TryGetCell(x + dx, y + dy);
+                    if (neighbour?.Status == CellStatus.Ship)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public List<Cell> DetectShip(int startX, int startY)
+        {
+            var result = new List<Cell>();
+            var visited = new HashSet<(int, int)>();
+            var queue = new Queue<(int, int)>();
+
+            queue.Enqueue((startX, startY));
+            visited.Add((startX, startY));
+
+            while (queue.Count > 0)
+            {
+                var (x, y) = queue.Dequeue();
+                result.Add(new Cell(x, y));
+
+                // 4-directional neighbors
+                var neighbors = new (int, int)[]
+                {
+                    (x+1, y), (x-1, y),
+                    (x, y+1), (x, y-1)
+                };
+
+                foreach (var (nx, ny) in neighbors)
+                {
+                    if (nx < 0 || ny < 0 || nx >= Rows || ny >= Columns)
+                        continue;
+
+                    if (visited.Contains((nx, ny)))
+                        continue;
+
+                    if (GetCell(nx, ny).Status != CellStatus.Ship)
+                        continue;
+
+                    queue.Enqueue((nx, ny));
+                    visited.Add((nx, ny));
+                }
+            }
+
+            return result;
+        }
+
+        public List<Ship> DetectShips()
+        {
+            int rows = Rows;
+            int cols = Columns;
+
+            bool[,] visited = new bool[rows, cols];
+            List<Ship> ships = new();
+
+            int[] dx = { -1, 1, 0, 0 };
+            int[] dy = { 0, 0, -1, 1 };
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    if (visited[i, j]) continue;
+                    if (GetCell(i, j).Status != CellStatus.Ship) continue;
+
+                    var ship = new Ship();
+                    var queue = new Queue<(int x, int y)>();
+
+                    queue.Enqueue((i, j));
+                    visited[i, j] = true;
+
+                    while (queue.Count > 0)
+                    {
+                        var (x, y) = queue.Dequeue();
+                        ship.Cells.Add(new Cell(x, y));
+
+                        for (int d = 0; d < 4; d++)
+                        {
+                            int nx = x + dx[d];
+                            int ny = y + dy[d];
+
+                            if (nx < 0 || ny < 0 || nx >= rows || ny >= cols)
+                                continue;
+
+                            if (visited[nx, ny])
+                                continue;
+
+                            if (GetCell(nx, ny).Status != CellStatus.Ship)
+                                continue;
+
+                            visited[nx, ny] = true;
+                            queue.Enqueue((nx, ny));
+                        }
+                    }
+
+                    ships.Add(ship);
+                }
+            }
+
+            return ships;
+        }
+
+        public void PlaceShipsRandomly(ShipSet shipSet)
+        {
+            var rand = new Random();
+
+            foreach (var ship in shipSet.Ships)
+            {
+                bool placed = false;
+                int attempts = 0;
+                var shipVM = new ShipViewModel(ship);
+
+
+                while (!placed && attempts < 999)
+                {
+                    int x = rand.Next(0, Rows);
+                    int y = rand.Next(0, Columns);
+
+                    int rotations = rand.Next(0, 4);
+                    for (int i = 0; i < rotations; i++)
+                    {
+                        Ship.RotateShip(new Ship(
+                            shipVM.Cells.Select(c => new Cell(c.Row, c.Column)).ToList()
+                        ));
+
+                        int newRows = shipVM.Cells.Max(c => c.Column) + 1;
+                        int newCols = shipVM.Cells.Max(c => c.Row) + 1;
+
+                        shipVM.Rows = newRows;
+                        shipVM.Columns = newCols;
+
+                        foreach (var cell in shipVM.Cells)
+                        {
+                            int temp = cell.Row;
+                            cell.Row = cell.Column;
+                            cell.Column = temp;
+                        }
+                    }
+
+                    if (PlaceShip(shipVM, x, y))
+                    {
+                        placed = true;
+                    }
+
+                    attempts++;
                 }
             }
         }

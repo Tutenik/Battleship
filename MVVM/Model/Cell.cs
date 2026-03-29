@@ -4,12 +4,18 @@
     {
         Empty,
         Ship,
+        ShipNeighbour,
         Hit,
         Missed
     }
 
-    public class Cell(int x, int y)
+    public class Cell(int row, int column)
     {
+        /*
+         *      row    == i
+         *      column == j
+         */
+
         /// <summary>
         /// Represents an action to be invoked when a cell changes.
         /// </summary>
@@ -22,38 +28,37 @@
         public event Action? CellExited;
         public event Action<Cell>? CellClicked;
 
-
-        private int _x = x;
+        private int _row = row;
 
         /// <summary>
         /// Gets or sets the X-coordinate value for the cell.
         /// </summary>
         /// <remarks>Setting this property raises the CellChanged event to notify listeners of the
         /// update.</remarks>
-        public int X
+        public int Row
         {
-            get { return _x; }
+            get { return _row; }
             set 
             {
-                _x = value;
+                _row = value;
                 CellChanged?.Invoke();
             }
         }
 
 
-        private int _y = y;
+        private int _column = column;
 
         /// <summary>
         /// Gets or sets the Y-coordinate value.
         /// </summary>
         /// <remarks>Setting this property raises the CellChanged event to notify listeners of the
         /// update.</remarks>
-        public int Y
+        public int Column
         {
-            get { return _y; }
+            get { return _column; }
             set 
             { 
-                _y = value;
+                _column = value;
                 CellChanged?.Invoke();
             }
         }

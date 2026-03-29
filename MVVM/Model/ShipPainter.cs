@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Documents;
-
-namespace Battleship.MVVM.Model
+﻿namespace Battleship.MVVM.Model
 {
     public class ShipPainter
     {
