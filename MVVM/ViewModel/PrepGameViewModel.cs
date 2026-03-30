@@ -216,6 +216,8 @@ namespace Battleship.MVVM.ViewModel
         }
         private void OnRandomize()
         {
+            HoverShip = null;
+            SelectedShip = null;
             _gameBoard.ClearBoard();
             _gameBoard.PlaceShipsRandomly(_shipSet);
             Ships.Clear();

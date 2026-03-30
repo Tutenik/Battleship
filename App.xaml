@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="/Resources/ElementTheme/MenuButtonTheme.xaml" />
                 <ResourceDictionary Source="/Resources/ElementTheme/TextBoxTheme.xaml" />
                 <ResourceDictionary Source="/Resources/ElementTheme/ButtonTheme.xaml" />
+                <ResourceDictionary Source="/Resources/ElementTheme/SelectableRadioButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
