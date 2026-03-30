@@ -1,5 +1,4 @@
 ﻿using Battleship.MVVM.ViewModel;
-using System.Windows;
 
 namespace Battleship.MVVM.Model
 {
@@ -43,15 +42,6 @@ namespace Battleship.MVVM.Model
             return Cells[row, column];
         }
 
-        public Cell? TryGetCell(int row, int column)
-        {
-            try
-            {
-                return Cells[row, column];
-            }
-            catch { return null; }
-        }
-
         public bool PlaceShip(ShipViewModel selectedShip, int startRow, int startColumn)
         {
             if (selectedShip == null) return false;
@@ -88,13 +78,17 @@ namespace Battleship.MVVM.Model
                 int row = startRow + cell.Row;
                 int column = startColumn + cell.Column;
 
-
                 foreach (var (dx, dy) in directions)
                 {
-                    var cellPeek = TryGetCell(row + dx, column + dy);
+                    int nr = row + dx;
+                    int nc = column + dy;
 
-                    if (cellPeek != null && cellPeek.Status != CellStatus.Ship)
-                        cellPeek.Status = CellStatus.ShipNeighbour;
+                    if (nr >= 0 && nr < Rows && nc >= 0 && nc < Columns)
+                    {
+                        var cellPeek = GetCell(nr, nc);
+                        if (cellPeek.Status != CellStatus.Ship)
+                            cellPeek.Status = CellStatus.ShipNeighbour;
+                    }
                 }
 
                 GetCell(row, column).Status = CellStatus.Ship;
@@ -108,10 +102,6 @@ namespace Battleship.MVVM.Model
             foreach (var cell in ship.Cells)
             {
                 GetCell(cell.Row, cell.Column).Status = CellStatus.Empty;
-            }
-
-            foreach (Cell cell in ship.Cells)
-            {
                 ClearNeighbours(cell.Row, cell.Column);
             }
         }
@@ -125,12 +115,18 @@ namespace Battleship.MVVM.Model
                     int nx = row + dx;
                     int ny = column + dy;
 
-                    var cell = TryGetCell(nx, ny);
-                    if (cell == null || cell.Status != CellStatus.ShipNeighbour)
+                    if (nx < 0 || nx >= Rows || ny < 0 || ny >= Columns)
+                        continue;
+
+                    var cell = GetCell(nx, ny);
+
+                    if (cell.Status != CellStatus.ShipNeighbour)
                         continue;
 
                     if (!HasAdjacentShip(nx, ny))
                         cell.Status = CellStatus.Empty;
+
+
                 }
             }
         }
@@ -141,7 +137,10 @@ namespace Battleship.MVVM.Model
             {
                 for (int dy = -1; dy <= 1; dy++)
                 {
-                    var neighbour = TryGetCell(x + dx, y + dy);
+                    if (dx < 0 || dx >= Rows || dy < 0 || dy >= Rows)
+                        continue;
+
+                    var neighbour = GetCell(x + dx, y + dy);
                     if (neighbour?.Status == CellStatus.Ship)
                         return true;
                 }
