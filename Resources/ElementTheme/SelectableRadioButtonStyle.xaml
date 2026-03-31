@@ -1,0 +1,137 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <LinearGradientBrush x:Key="DefaultBackgroundBrush"
+                         StartPoint="0 0"
+                         EndPoint="1 2">
+        <GradientStop Color="#5bc3ff"
+                      Offset="0.0" />
+        <GradientStop Color="#3aa0ff"
+                      Offset="1.0" />
+    </LinearGradientBrush>
+
+    <Style x:Key="SelectableRadioButtonStyle"
+           TargetType="RadioButton">
+
+        <Setter Property="IsHitTestVisible"
+                Value="False" />
+        <Setter Property="Opacity"
+                Value="0.6" />
+        <Setter Property="RenderTransformOrigin"
+                Value="0.5, 0.5" />
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1"
+                                ScaleY="1" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background"
+                Value="{StaticResource DefaultBackgroundBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid Margin="0 0 0 15"
+                          Width="180">
+
+                        <Border x:Name="Border"
+                                Background="#0074B8"
+                                CornerRadius="10" />
+
+                        <Border x:Name="ProgressOverlay"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                HorizontalAlignment="Stretch"
+                                Opacity="1">
+
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1"
+                                                ScaleY="1" />
+                            </Border.RenderTransform>
+
+                            <Border.RenderTransformOrigin>0,0.5</Border.RenderTransformOrigin>
+                        </Border>
+
+                        <TextBlock Text="{TemplateBinding Content}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   Foreground="White" />
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsChecked"
+                                 Value="True">
+
+                            <Setter TargetName="ProgressOverlay"
+                                    Property="Opacity"
+                                    Value="1" />
+
+                            <Setter TargetName="ProgressOverlay"
+                                    Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="{Binding Percentage,
+                                                            FallbackValue=1}"
+                                                    ScaleY="1" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                        <Trigger Property="IsChecked"
+                                 Value="False">
+
+                            <Setter TargetName="ProgressOverlay"
+                                    Property="Opacity"
+                                    Value="1" />
+
+                            <Setter TargetName="ProgressOverlay"
+                                    Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1"
+                                                    ScaleY="1" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsChecked"
+                     Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                             To="1.15"
+                                             Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                             To="1.15"
+                                             Duration="0:0:0.2" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             To="0.6"
+                                             Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                             To="1"
+                                             Duration="0:0:0.2" />
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                             To="1"
+                                             Duration="0:0:0.2" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

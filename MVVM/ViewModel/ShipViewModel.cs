@@ -45,7 +45,7 @@ namespace Battleship.MVVM.ViewModel
                 int temp = Rows;
                 Rows = Columns;
                 Columns = temp;
-            } 
+            }
 
             Cells = new ObservableCollection<CellViewModel>();
 

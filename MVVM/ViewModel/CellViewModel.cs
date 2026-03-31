@@ -78,7 +78,7 @@ namespace Battleship.MVVM.ViewModel
             ImagePath = _cell.Status switch
             {
                 CellStatus.Hit => new BitmapImage(new Uri("/Resources/Images/HitCell.png", UriKind.Relative)),
-                CellStatus.Missed => new BitmapImage(new Uri("/Resources/Images/MissedCell.png", UriKind.Relative)),
+                CellStatus.Miss => new BitmapImage(new Uri("/Resources/Images/MissedCell.png", UriKind.Relative)),
                 CellStatus.Ship => new BitmapImage(new Uri("/Resources/Images/ShipCell.png", UriKind.Relative)),
                 CellStatus.ShipNeighbour => new BitmapImage(new Uri("/Resources/Images/btead.png", UriKind.Relative)),
                 _ => new BitmapImage(new Uri("/Resources/Images/boykis.png", UriKind.Relative)),

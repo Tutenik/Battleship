@@ -2,8 +2,6 @@
 using Battleship.MVVM.Model;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Shell;
 
 namespace Battleship.MVVM.ViewModel
 {
@@ -14,7 +12,6 @@ namespace Battleship.MVVM.ViewModel
         private ShipSet _shipSet;
 
         private GameBoardViewModel _gameBoardVM;
-
         public GameBoardViewModel GameBoardVM
         {
             get { return _gameBoardVM; }
@@ -81,30 +78,30 @@ namespace Battleship.MVVM.ViewModel
             }
         }
 
-        private int _gridX;
+        private int _gridRow;
         public int GridRow
         {
             get
             {
-                return _gridX;
+                return _gridRow;
             }
             set
             {
-                _gridX = value;
+                _gridRow = value;
                 OnPropertyChanged(nameof(GridRow));
             }
         }
 
-        private int _gridY;
+        private int _gridColumn;
         public int GridColumn
         {
             get
             {
-                return _gridY;
+                return _gridColumn;
             }
             set
             {
-                _gridY = value;
+                _gridColumn = value;
                 OnPropertyChanged(nameof(GridColumn));
             }
         }
@@ -126,18 +123,20 @@ namespace Battleship.MVVM.ViewModel
         }
 
         public GameViewModel GameVM { get; set; }
-        public ObservableCollection<ShipViewModel> Ships { get; set; }
 
-        public RelayCommand RotateShipCommand { get; set; }
-        public RelayCommand MouseMoveCommand { get; set; }
-        public RelayCommand MouseLeftButtonUpCommand { get; set; }
-        public RelayCommand MouseRightButtonDownCommand { get; set; }
-        public RelayCommand RandomizeCommand { get; set; }
-        public RelayCommand ReadyCommand { get; set; }
+        public ObservableCollection<ShipViewModel> Ships { get; }
+
+        public RelayCommand RotateShipCommand { get; }
+        public RelayCommand MouseMoveCommand { get; }
+        public RelayCommand MouseLeftButtonUpCommand { get; }
+        public RelayCommand MouseRightButtonDownCommand { get; }
+        public RelayCommand RandomizeCommand { get; }
+        public RelayCommand ReadyCommand { get; }
 
         public PrepGameViewModel(MainViewModel mainViewModel, ShipSet selectedShipSet)
         {
             _mainViewModel = mainViewModel;
+
             _gameBoard = new GameBoard(10);
             GameBoardVM = new GameBoardViewModel(_gameBoard);
 
@@ -145,9 +144,7 @@ namespace Battleship.MVVM.ViewModel
 
             Ships = new ObservableCollection<ShipViewModel>();
             foreach (var ship in selectedShipSet.Ships)
-            {
                 Ships.Add(new ShipViewModel(ship));
-            }
 
             Ships = new ObservableCollection<ShipViewModel>(Ships.OrderByDescending(c => c.Cells.Count));
 
@@ -181,7 +178,6 @@ namespace Battleship.MVVM.ViewModel
                 cell.Column = temp;
             }
         }
-
         private void OnMouseMove()
         {
             TopCanvasPosition = MousePosition.Y * 40;
@@ -189,7 +185,6 @@ namespace Battleship.MVVM.ViewModel
             GridRow = (int)MousePosition.Y;
             GridColumn = (int)MousePosition.X;
         }
-
         private void OnShipPlace()
         {
 
@@ -202,7 +197,6 @@ namespace Battleship.MVVM.ViewModel
                 HoverShip = null;
             }
         }
-
         private void OnShipPick()
         {
             if (SelectedShip != null) return;
@@ -224,15 +218,8 @@ namespace Battleship.MVVM.ViewModel
         }
         private void OnReady()
         {
-            GameVM = new GameViewModel(_gameBoard, CreateEnemyBoard());
+            GameVM = new GameViewModel(_gameBoard, GameBoard.CreateRandomizedBoard(10, _shipSet));
             _mainViewModel.ChangeCurrentView(GameVM);
-        }
-
-        private GameBoard CreateEnemyBoard()
-        {
-            var enemyBoard = new GameBoard(10);
-            enemyBoard.PlaceShipsRandomly(_shipSet);
-            return enemyBoard;
         }
 
         private Point QuantizeToGrid(Point position, double cellSize)
@@ -249,12 +236,7 @@ namespace Battleship.MVVM.ViewModel
             return new Point(position.X - ship.Columns / 2, position.Y - ship.Rows / 2);
         }
 
-        private Point ClampToBoard(
-                                Point gridPos,
-                                int shipWidth,
-                                int shipHeight,
-                                int boardRows,
-                                int boardColumns)
+        private Point ClampToBoard(Point gridPos, int shipWidth, int shipHeight, int boardRows, int boardColumns)
         {
             int x = (int)gridPos.X;
             int y = (int)gridPos.Y;
@@ -277,14 +259,13 @@ namespace Battleship.MVVM.ViewModel
             if (_gameBoard.GetCell(row, column).Status != CellStatus.Ship)
                 return null;
 
+            var ship = _gameBoard.DetectShip(row, column);
 
-            var oldCells = _gameBoard.DetectShip(row, column);
+            _gameBoard.RemoveShipFromGrid(ship);
 
-            _gameBoard.RemoveShipFromGrid(new Ship(oldCells));
+            var shipCells = Ship.GetRelativePositions(ship);
 
-            var shipCells = Ship.GetRelativePositions(new Ship(oldCells));
-
-            return new ShipViewModel(new Ship(shipCells));
+            return new ShipViewModel(ship);
         }
     }
 }

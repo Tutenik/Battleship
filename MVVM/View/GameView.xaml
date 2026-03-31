@@ -18,15 +18,28 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel>
-            <RadioButton Content="Player 1"
-                         IsChecked="{Binding IsPlayerTurn, Mode=TwoWay}" />
-            <RadioButton Content="Player 2"
-                         IsChecked="{Binding IsPlayerTurn, Mode=TwoWay, Converter={StaticResource InverseBool}}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            
+            <RadioButton Content="Player"
+                         Grid.Row="0"
+                         IsChecked="{Binding IsPlayerTurn, Mode=TwoWay}"
+                         Style="{StaticResource SelectableRadioButtonStyle}"/>
+            <RadioButton Content="AI"
+                         Grid.Row="1"
+                         IsChecked="{Binding IsPlayerTurn, Mode=TwoWay, Converter={StaticResource InverseBool}}"
+                         Style="{StaticResource SelectableRadioButtonStyle}"/>
             <ContentControl Content="{Binding GameBoardVM}"
                             Width="200"
-                            Height="200" />
-        </StackPanel>
+                            Height="200"
+                            Grid.Row="3"
+                            Margin="0 0 0 25"/>
+        </Grid>
         
         <ContentControl Content="{Binding EnemyGameBoardVM}" 
                         Grid.Column="1"

@@ -19,7 +19,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="White"
-                            BorderThickness="3">
+                            BorderThickness="1.5">
                         <Image Source="{Binding ImagePath}"
                                HorizontalAlignment="Stretch"
                                VerticalAlignment="Stretch" />
