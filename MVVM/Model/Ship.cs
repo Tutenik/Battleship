@@ -3,7 +3,9 @@
     public class Ship
     {
         public int Size => Cells.Count;
-        public List<Cell> Cells { get; set; }
+        public List<Cell> Cells { get; }
+
+        public bool IsSunk => Cells.All(c => c.Status == CellStatus.Hit);
 
         public Ship() { Cells = new List<Cell>(); }
 

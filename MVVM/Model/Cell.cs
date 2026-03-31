@@ -6,7 +6,7 @@
         Ship,
         ShipNeighbour,
         Hit,
-        Missed
+        Miss
     }
 
     public class Cell(int row, int column)

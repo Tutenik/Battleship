@@ -1,5 +1,4 @@
 ﻿using Battleship.MVVM.ViewModel;
-
 namespace Battleship.MVVM.Model
 {
     public class GameBoard
@@ -7,8 +6,13 @@ namespace Battleship.MVVM.Model
         public Cell[,] Cells { get; set; }
         private int _size;
 
+        private Random r = new Random();
+        private List<Cell> _availableCells;
+
         public int Rows => Cells.GetLength(1);
         public int Columns => Cells.GetLength(0);
+
+        public List<Ship> Ships => DetectShips();
 
         public GameBoard(int size)
         {
@@ -16,7 +20,7 @@ namespace Battleship.MVVM.Model
             Cells = InitCells(size);
         }
 
-        private Cell[,] InitCells(int size)
+        private static Cell[,] InitCells(int size)
         {
             Cell[,] cells = new Cell[size, size];
 
@@ -40,6 +44,37 @@ namespace Battleship.MVVM.Model
         public Cell GetCell(int row, int column)
         {
             return Cells[row, column];
+        }
+
+        public void InitializeAvailableCells()
+        {
+            _availableCells = new List<Cell>();
+
+            foreach (var cell in Cells)
+                _availableCells.Add(cell);
+        }
+
+        public Cell GetRandomCell()
+        {
+            int index = r.Next(_availableCells.Count);
+            var cell = _availableCells[index];
+
+            // Remove so it won't be picked again
+            _availableCells.RemoveAt(index);
+
+            return cell;
+        }
+
+        public static bool ShootCell(Cell cell)
+        {
+            if (cell.Status == CellStatus.Ship)
+            {
+                cell.Status = CellStatus.Hit;
+                return true;
+            }
+
+            cell.Status = CellStatus.Miss;
+            return false;
         }
 
         public bool PlaceShip(ShipViewModel selectedShip, int startRow, int startColumn)
@@ -125,13 +160,11 @@ namespace Battleship.MVVM.Model
 
                     if (!HasAdjacentShip(nx, ny))
                         cell.Status = CellStatus.Empty;
-
-
                 }
             }
         }
 
-        private bool HasAdjacentShip(int x, int y)
+        private bool HasAdjacentShip(int row, int column)
         {
             for (int dx = -1; dx <= 1; dx++)
             {
@@ -140,7 +173,7 @@ namespace Battleship.MVVM.Model
                     if (dx < 0 || dx >= Rows || dy < 0 || dy >= Rows)
                         continue;
 
-                    var neighbour = GetCell(x + dx, y + dy);
+                    var neighbour = GetCell(row + dx, column + dy);
                     if (neighbour?.Status == CellStatus.Ship)
                         return true;
                 }
@@ -149,14 +182,14 @@ namespace Battleship.MVVM.Model
             return false;
         }
 
-        public List<Cell> DetectShip(int startX, int startY)
+        public Ship DetectShip(int startRow, int startColumn)
         {
             var result = new List<Cell>();
             var visited = new HashSet<(int, int)>();
             var queue = new Queue<(int, int)>();
 
-            queue.Enqueue((startX, startY));
-            visited.Add((startX, startY));
+            queue.Enqueue((startRow, startColumn));
+            visited.Add((startRow, startColumn));
 
             while (queue.Count > 0)
             {
@@ -178,7 +211,7 @@ namespace Battleship.MVVM.Model
                     if (visited.Contains((nx, ny)))
                         continue;
 
-                    if (GetCell(nx, ny).Status != CellStatus.Ship)
+                    if (GetCell(nx, ny).Status != CellStatus.Ship && GetCell(nx, ny).Status != CellStatus.Hit)
                         continue;
 
                     queue.Enqueue((nx, ny));
@@ -186,7 +219,7 @@ namespace Battleship.MVVM.Model
                 }
             }
 
-            return result;
+            return new Ship(result);
         }
 
         public List<Ship> DetectShips()
@@ -205,9 +238,9 @@ namespace Battleship.MVVM.Model
                 for (int j = 0; j < cols; j++)
                 {
                     if (visited[i, j]) continue;
-                    if (GetCell(i, j).Status != CellStatus.Ship) continue;
+                    if (GetCell(i, j).Status != CellStatus.Ship && GetCell(i, j).Status != CellStatus.Hit) continue;
 
-                    var ship = new Ship();
+                    var cells = new List<Cell>();
                     var queue = new Queue<(int x, int y)>();
 
                     queue.Enqueue((i, j));
@@ -216,7 +249,7 @@ namespace Battleship.MVVM.Model
                     while (queue.Count > 0)
                     {
                         var (x, y) = queue.Dequeue();
-                        ship.Cells.Add(new Cell(x, y));
+                        cells.Add(GetCell(x, y));
 
                         for (int d = 0; d < 4; d++)
                         {
@@ -229,7 +262,7 @@ namespace Battleship.MVVM.Model
                             if (visited[nx, ny])
                                 continue;
 
-                            if (GetCell(nx, ny).Status != CellStatus.Ship)
+                            if (GetCell(nx, ny).Status != CellStatus.Ship && GetCell(nx, ny).Status != CellStatus.Hit)
                                 continue;
 
                             visited[nx, ny] = true;
@@ -237,7 +270,7 @@ namespace Battleship.MVVM.Model
                         }
                     }
 
-                    ships.Add(ship);
+                    ships.Add(new Ship(cells));
                 }
             }
 
@@ -287,6 +320,41 @@ namespace Battleship.MVVM.Model
                     }
 
                     attempts++;
+                }
+            }
+        }
+
+        public static GameBoard CreateRandomizedBoard(int size, ShipSet shipSet)
+        {
+            var board = new GameBoard(size);
+            board.PlaceShipsRandomly(shipSet);
+            return board;
+        }
+
+        public void RevealShip(Ship ship)
+        {
+            foreach (var cell in ship.Cells)
+            {
+                RevealNeighbours(cell.Row, cell.Column);
+            }
+        }
+
+        private void RevealNeighbours(int row, int column)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    int nx = row + dx;
+                    int ny = column + dy;
+
+                    if (nx < 0 || nx >= Rows || ny < 0 || ny >= Columns)
+                        continue;
+
+                    var cell = GetCell(nx, ny);
+
+                    if (cell.Status != CellStatus.Hit)
+                        cell.Status = CellStatus.Miss;
                 }
             }
         }
