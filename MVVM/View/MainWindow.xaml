@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Battleship.MVVM.View"
         xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
+        xmlns:converter="clr-namespace:Battleship.MVVM.Converters"
         mc:Ignorable="d"
         Height="600"
         Width="920"
@@ -18,7 +19,7 @@
     </Window.DataContext>
 
     <Window.Resources>
-        <local:RectConverter x:Key="RectConverter"></local:RectConverter>
+        <converter:RectConverter x:Key="RectConverter" />
     </Window.Resources>
 
     <Border Background="#272537"

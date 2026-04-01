@@ -8,14 +8,15 @@
              xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:helper="clr-namespace:Battleship.MVVM.Helpers"
+             xmlns:converter="clr-namespace:Battleship.MVVM.Converters"
              mc:Ignorable="d"
              d:DesignHeight="460"
              d:DesignWidth="800"
              x:Name="Window">
 
     <UserControl.Resources>
-        <local:AddConverter x:Key="AddConverter"></local:AddConverter>
-        <local:RectConverter x:Key="RectConverter"></local:RectConverter>
+        <converter:AddConverter x:Key="AddConverter"/>
+        <converter:RectConverter x:Key="RectConverter" />
     </UserControl.Resources>
 
     <UserControl.InputBindings>

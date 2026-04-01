@@ -5,12 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Battleship.MVVM.View"
              xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
+             xmlns:converter="clr-namespace:Battleship.MVVM.Converters"
              mc:Ignorable="d"
              d:DesignHeight="460"
              d:DesignWidth="840">
 
     <UserControl.Resources>
-        <local:ToolToBoolConverter x:Key="ToolToBool" />
+        <converter:BrushToBoolConverter x:Key="BrushToBool" />
     </UserControl.Resources>
 
     <Grid>
@@ -36,12 +37,12 @@
                 <ToggleButton Content="Ship"
                               Style="{StaticResource ToggleButtonBrushTheme}"
                               IsChecked="{Binding SelectedBrush,
-                          Converter={StaticResource ToolToBool},
+                          Converter={StaticResource BrushToBool},
                           ConverterParameter=ShipBrush}" />
                 <ToggleButton Content="Eraser"
                               Style="{StaticResource ToggleButtonBrushTheme}"
                               IsChecked="{Binding SelectedBrush,
-                          Converter={StaticResource ToolToBool},
+                          Converter={StaticResource BrushToBool},
                           ConverterParameter=EraserBrush}" />
             </StackPanel>
             

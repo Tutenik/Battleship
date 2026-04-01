@@ -5,12 +5,13 @@
              xmlns:viewModel="clr-namespace:Battleship.MVVM.ViewModel"
              xmlns:view="clr-namespace:Battleship.MVVM.View"
              StartupUri="/MVVM/View/MainWindow.xaml">
+    
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/ElementTheme/MenuButtonTheme.xaml" />
                 <ResourceDictionary Source="/Resources/ElementTheme/TextBoxTheme.xaml" />
-                <ResourceDictionary Source="/Resources/ElementTheme/ButtonTheme.xaml" />
+                <ResourceDictionary Source="/Resources/ElementTheme/RoundedGradientButtonTheme.xaml" />
                 <ResourceDictionary Source="/Resources/ElementTheme/SelectableRadioButtonStyle.xaml" />
                 <ResourceDictionary Source="/Resources/ElementTheme/ToggleButtonBrushTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>

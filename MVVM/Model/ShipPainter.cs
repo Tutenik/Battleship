@@ -11,7 +11,7 @@
     {
         private GameBoard _board;
 
-        public Brushes CurrentBrush { get; private set;  }
+        public Brushes CurrentBrush { get; set;  }
 
         public ShipPainter(GameBoard board)
         {
