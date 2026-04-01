@@ -1,20 +1,22 @@
 ﻿using Battleship.MVVM.Model;
 using Battleship.Core;
 using System.IO;
+using System.Windows;
 
 namespace Battleship.MVVM.ViewModel
 {
     public class ShipBuilderViewModel : ObservableObject
     {
-        public GameBoardViewModel GameBoardVM { get; set; }
+        private readonly GameBoard _gb;
+        private readonly ShipPainter _sp;
 
-        private object _gridView;
-        public object GridView
+        private GameBoardViewModel _gameBoard;
+        public GameBoardViewModel GameBoard
         {
-            get { return _gridView; }
+            get { return _gameBoard; }
             set
             {
-                _gridView = value;
+                _gameBoard = value;
                 OnPropertyChanged();
             }
         }
@@ -29,32 +31,42 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _shipSetName = value;
-                OnPropertyChanged(nameof(ShipSetName));
+                OnPropertyChanged();
             }
         }
 
-        public RelayCommand PaintCommand { get; set; }
-        public RelayCommand StopPaintingCommand { get; set; }
-        public RelayCommand SaveShipsCommand { get; set; }
+        private Brushes _selectedBrush;
+        public Brushes SelectedBrush
+        {
+            get
+            {
+                return _selectedBrush;
+            }
+            set
+            {
+                _selectedBrush = value;
+                _sp.CurrentBrush = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public GameBoard gab;
-
-        public ShipPainter sp;
+        public RelayCommand SaveShipsCommand { get; }
 
         public ShipBuilderViewModel()
         {
-            gab = new(10);
-            GameBoardVM = new GameBoardViewModel(gab);
-            GridView = GameBoardVM;
+            _gb = new GameBoard(10);
+            GameBoard = new GameBoardViewModel(_gb);
 
-            sp = new ShipPainter(gab, ShipPainter.Brushes.ShipBrush);
+            _sp = new ShipPainter(_gb);
 
-            PaintCommand = new RelayCommand(_ => sp.PaintCell());
-            StopPaintingCommand = new RelayCommand(_ => sp.StopPaintingCell());
+            _sp.StartPainting();
 
-            SaveShipsCommand = new RelayCommand(_ => 
-                ShipService.SaveShips($"{ShipSetName?.Trim()}.json", 
-                gab.DetectShips()),
+            SaveShipsCommand = new RelayCommand(_ =>
+            {
+                ShipService.SaveShips($"{ShipSetName?.Trim()}.json",
+                _gb.DetectShips());
+                MessageBox.Show("Ship set saved successfully! or maybie not...", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            },
                 _ => !string.IsNullOrWhiteSpace(ShipSetName)
             );
         }

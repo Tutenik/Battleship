@@ -1,36 +1,31 @@
 ﻿namespace Battleship.MVVM.Model
 {
+    public enum Brushes
+    {
+        ShipBrush,
+        EraserBrush,
+        None
+    }
+
     public class ShipPainter
     {
-        public enum Brushes
-        {
-            ShipBrush,
-            None
-        }
-
         private GameBoard _board;
-        private Brushes _currentBrush;
 
-        public Brushes CurrentBrush
-        {
-            get { return _currentBrush; }
-            set { _currentBrush = value; }
-        }
+        public Brushes CurrentBrush { get; private set;  }
 
-        public ShipPainter(GameBoard board, Brushes currentBrush)
+        public ShipPainter(GameBoard board)
         {
             _board = board;
-            CurrentBrush = currentBrush;
         }
 
-        public void PaintCell()
+        public void StartPainting()
         {
             for (int i = 0; i < _board.Cells.GetLength(0); i++)
             {
                 for (int j = 0; j < _board.Cells.GetLength(1); j++)
                 {
-                    _board.Cells[i, j].CellClicked -= ActivateCell;
-                    _board.Cells[i, j].CellClicked += ActivateCell;
+                    _board.Cells[i, j].CellClicked -= Paint;
+                    _board.Cells[i, j].CellClicked += Paint;
                 }
             }
         }
@@ -41,17 +36,18 @@
             {
                 for (int j = 0; j < _board.Cells.GetLength(1); j++)
                 {
-                    _board.Cells[i, j].CellClicked -= ActivateCell;
+                    _board.Cells[i, j].CellClicked -= Paint;
                 }
             }
         }
 
-        private void ActivateCell(Cell cell)
+        private void Paint(Cell cell)
         {
             cell.Status = CurrentBrush switch
             {
                 Brushes.ShipBrush => CellStatus.Ship,
-                _ => CellStatus.Empty,
+                Brushes.EraserBrush => CellStatus.Empty,
+                _ => cell.Status,
             };
         }
     }
