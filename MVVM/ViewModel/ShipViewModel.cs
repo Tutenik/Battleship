@@ -6,7 +6,7 @@ namespace Battleship.MVVM.ViewModel
 {
     public class ShipViewModel : ObservableObject
     {
-        private Ship _ship;
+        private readonly Ship _ship;
 
         private int _rows;
         public int Rows
@@ -30,22 +30,13 @@ namespace Battleship.MVVM.ViewModel
             }
         }
 
-        public ObservableCollection<CellViewModel> Cells { get; set; } = new ObservableCollection<CellViewModel>();
+        public ObservableCollection<CellViewModel> Cells { get; set; }
 
         public ShipViewModel(Ship ship)
         {
             _ship = ship;
             Rows = ship.Cells.Max(c => c.Row) + 1;
-            Columns =  ship.Cells.Max(c => c.Column) + 1;
-
-            if (Columns < Rows)
-            {
-                ship.RotateShip();
-
-                int temp = Rows;
-                Rows = Columns;
-                Columns = temp;
-            }
+            Columns = ship.Cells.Max(c => c.Column) + 1;
 
             Cells = new ObservableCollection<CellViewModel>();
 
@@ -61,7 +52,7 @@ namespace Battleship.MVVM.ViewModel
             var clone = new ShipViewModel(new Ship
             (
                 Cells
-                    .Select(c => new Cell(c.Row, c.Column ))
+                    .Select(c => new Cell(c.Row, c.Column))
                     .ToList()
             ));
 
@@ -71,6 +62,19 @@ namespace Battleship.MVVM.ViewModel
         public Ship ToShip()
         {
             return _ship;
+        }
+
+        public static void RotateShip(ShipViewModel ship)
+        {
+            int maxRow = ship.Cells.Max(c => c.Row);
+
+            foreach (var cell in ship.Cells)
+            {
+                int oldRow = cell.Row;
+
+                cell.Row = cell.Column;
+                cell.Column = maxRow - oldRow;
+            }
         }
     }
 }

@@ -7,65 +7,53 @@
              mc:Ignorable="d"
              d:DesignHeight="460"
              d:DesignWidth="800">
-    <StackPanel>
-        <TextBlock Text="Battleship game"
-                   Foreground="White"
-                   FontSize="28"
-                   HorizontalAlignment="Left"
-                   Margin="0 0 0 20" />
+
+    <Grid HorizontalAlignment="Center"
+          VerticalAlignment="Center">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
             <Border Width="400"
-                    Height="200">
+                    Height="200"
+                    CornerRadius="10">
 
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0 0"
                                          EndPoint="1 2">
 
-                        <GradientStop Color="#5bc3ff"
+                        <GradientStop Color="#1FADFF"
                                       Offset="0.0" />
 
-                        <GradientStop Color="#3aa0ff"
+                        <GradientStop Color="#007EF5"
                                       Offset="1.0" />
                     </LinearGradientBrush>
                 </Border.Background>
 
-                <Border.Clip>
-                    <RectangleGeometry RadiusX="10"
-                                       RadiusY="10"
-                                       Rect="0 0 400 200" />
-                </Border.Clip>
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize"
+                                    Value="18" />
+                            <Setter Property="Margin"
+                                    Value="20 10 10 0" />
+                            <Setter Property="Foreground"
+                                    Value="White" />
+                        </Style>
+                    </StackPanel.Resources>
 
-                <Grid>
-                    <StackPanel>
-                        <TextBlock Text="Controls"
-                                   Foreground="White"
-                                   FontSize="28"
-                                   Margin="20 10 10 0" />
+                    <TextBlock Text="Controls"
+                               FontSize="28" />
 
-                        <TextBlock Text="R: Lets you rotate ship"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   Margin="20 10 10 0" />
+                    <TextBlock Text="R: Lets you rotate ship" />
 
-                        <TextBlock Text="Left click to interact to place / interact"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   Margin="20 10 10 0" />
+                    <TextBlock Text="Left click to place / interact" />
 
-                        <TextBlock Text="Right click to pick up ship"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   Margin="20 10 10 0" />
-                    </StackPanel>
-
-                    <Image Width="250"
-                           Height="250"
-                           Source="/BattleShip;component/Images/HitCell.png"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Bottom"
-                           Margin="0,0,-67,-38" />
-                </Grid>
+                    <TextBlock Text="Right click to pick up ship" />
+                </StackPanel>
             </Border>
 
             <Border Width="200"
@@ -77,83 +65,59 @@
                     <LinearGradientBrush StartPoint="0 0"
                                          EndPoint="1 2">
 
-                        <GradientStop Color="#FFc554"
+                        <GradientStop Color="#FFCF70"
                                       Offset="0.0" />
 
-                        <GradientStop Color="#ffb738"
+                        <GradientStop Color="#FFBC47"
                                       Offset="1.0" />
                     </LinearGradientBrush>
                 </Border.Background>
-                <TextBlock>
-                    <Hyperlink NavigateUri="https://github.com/tutenik"
-                               RequestNavigate="Hyperlink_RequestNavigate">
-                        Made by Tutenik
-                    </Hyperlink>
-                </TextBlock>
+
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize"
+                                    Value="20" />
+                            <Setter Property="Margin"
+                                    Value="15 15 0 45" />
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <TextBlock Text="Made using WPF &#10;with MVVM pattern." />
+                    <TextBlock Text="Created for &#10;a school project." />
+                </StackPanel>
             </Border>
         </StackPanel>
 
-        <StackPanel>
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type Border}">
-                    <Setter Property="Margin"
-                            Value="15 0 0 0" />
-                </Style>
-            </StackPanel.Resources>
+        <Border Width="130"
+                Height="40"
+                CornerRadius="10"
+                Grid.Row="1"
+                Margin="510,52,0,-92"
+                BorderBrush="#47A6FF"
+                BorderThickness="2">
 
-            <TextBlock Text="Most Watch"
-                       Foreground="White"
-                       FontSize="20"
-                       HorizontalAlignment="Left"
-                       Margin="0 0 0 10" />
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0 0"
+                                     EndPoint="1 2">
 
-            <StackPanel Orientation="Horizontal"
-                        Margin="0 0 0 10">
-                <Border Width="150"
-                        Height="150"
-                        Background="#844eff"
-                        CornerRadius="10"
-                        Margin="0" />
+                    <GradientStop Color="#232031"
+                                  Offset="0.0" />
 
-                <Border Width="150"
-                        Height="150"
-                        Background="#4e99ff"
-                        CornerRadius="10" />
+                    <GradientStop Color="#1B1825"
+                                  Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
 
-                <Border Width="150"
-                        Height="150"
-                        Background="#4eff91"
-                        CornerRadius="10" />
-
-                <Border Width="130"
-                        Height="40"
-                        CornerRadius="10"
-                        VerticalAlignment="Bottom">
-
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0 0"
-                                             EndPoint="1 2">
-
-                            <GradientStop Color="#FFc554"
-                                          Offset="0.0" />
-
-                            <GradientStop Color="#ffb738"
-                                          Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Border.Background>
-
-                    <TextBlock HorizontalAlignment="Center"
-                               VerticalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/tutenik"
-                                   RequestNavigate="Hyperlink_RequestNavigate"
-                                   Foreground="Black"
-                                   TextDecorations="None">                        
-                            Made by Tutenik
-                        </Hyperlink>
-                    </TextBlock>
-                </Border>
-
-            </StackPanel>
-        </StackPanel>
-    </StackPanel>
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                <Hyperlink NavigateUri="https://github.com/tutenik"
+                           RequestNavigate="Hyperlink_RequestNavigate"
+                           Foreground="White"
+                           TextDecorations="None">
+                    <Run Text="Made by Tutenik" />
+                </Hyperlink>
+            </TextBlock>
+        </Border>
+    </Grid>
 </UserControl>

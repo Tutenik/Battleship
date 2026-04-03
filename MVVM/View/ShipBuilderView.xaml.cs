@@ -1,5 +1,4 @@
-﻿using Battleship.MVVM.ViewModel;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Battleship.MVVM.View
 {

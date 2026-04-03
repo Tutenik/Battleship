@@ -51,8 +51,6 @@ namespace Battleship.MVVM.ViewModel
             }
         }
 
-        public RelayCommand CellEnterCommand { get; set; }
-        public RelayCommand CellLeaveCommand { get; set; }
         public RelayCommand CellClickCommand { get; set; }
 
         public CellViewModel(Cell cell)
@@ -62,12 +60,10 @@ namespace Battleship.MVVM.ViewModel
             _column = cell.Column;
             _row = cell.Row;
 
-            _imagePath = new BitmapImage(new Uri("/Resources/Images/boykis.png", UriKind.Relative));
+            _imagePath = new BitmapImage(new Uri("/Resources/Images/EmptyCell.png", UriKind.Relative));
 
             _cell.CellChanged += UpdateCell;
 
-            CellEnterCommand = new RelayCommand(_ => _cell.OnCellEnter());
-            CellLeaveCommand = new RelayCommand(_ => _cell.OnCellExit());
             CellClickCommand = new RelayCommand(_ => _cell.OnCellClicked());
         }
 
@@ -80,8 +76,8 @@ namespace Battleship.MVVM.ViewModel
                 CellStatus.Hit => new BitmapImage(new Uri("/Resources/Images/HitCell.png", UriKind.Relative)),
                 CellStatus.Miss => new BitmapImage(new Uri("/Resources/Images/MissedCell.png", UriKind.Relative)),
                 CellStatus.Ship => new BitmapImage(new Uri("/Resources/Images/ShipCell.png", UriKind.Relative)),
-                CellStatus.ShipNeighbour => new BitmapImage(new Uri("/Resources/Images/btead.png", UriKind.Relative)),
-                _ => new BitmapImage(new Uri("/Resources/Images/boykis.png", UriKind.Relative)),
+                CellStatus.ShipNeighbour => new BitmapImage(new Uri("/Resources/Images/ShipNeighbourCell.png", UriKind.Relative)),
+                _ => new BitmapImage(new Uri("/Resources/Images/EmptyCell.png", UriKind.Relative)),
             };
         }
     }

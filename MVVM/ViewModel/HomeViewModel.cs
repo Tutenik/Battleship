@@ -1,10 +1,8 @@
 ﻿using Battleship.Core;
 using Battleship.MVVM.Model;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Battleship.MVVM.ViewModel
 {
@@ -14,7 +12,6 @@ namespace Battleship.MVVM.ViewModel
 
         private readonly ObservableCollection<ShipSet> _shipSets;
         public ObservableCollection<ShipSet> ShipSets => _shipSets;
-        public RelayCommand PlayGameCommand { get; set; }
 
         public PrepGameViewModel PrepGameVM { get; set; }
 
@@ -32,15 +29,18 @@ namespace Battleship.MVVM.ViewModel
             }
         }
 
+        public RelayCommand PlayGameCommand { get; }
+
         public HomeViewModel(MainViewModel mainViewModel)
         {
             _shipSets = new ObservableCollection<ShipSet>();
             InitShipSets();
-            SelectedItem = _shipSets[0];
+            SelectedItem = _shipSets.FirstOrDefault(ss => ss.Name == "Default", _shipSets[0]);
             SetupWatcher();
 
-            PlayGameCommand = new RelayCommand(_ => { 
-                PrepGameVM = new PrepGameViewModel(mainViewModel ,SelectedItem);
+            PlayGameCommand = new RelayCommand(_ =>
+            {
+                PrepGameVM = new PrepGameViewModel(mainViewModel, SelectedItem);
                 mainViewModel.ChangeCurrentView(PrepGameVM);
             });
         }

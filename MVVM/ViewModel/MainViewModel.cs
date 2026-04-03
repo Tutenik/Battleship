@@ -1,14 +1,13 @@
 ﻿using Battleship.Core;
-using System.Windows;
 
 namespace Battleship.MVVM.ViewModel
 {
     public class MainViewModel : ObservableObject
     {
-        public RelayCommand HomeViewCommand { get; set; }
-        public RelayCommand ShipBuilderCommand { get; set; }
-        public RelayCommand SettingsViewCommand { get; set; }
-        public RelayCommand AboutViewCommand { get; set; }
+        public RelayCommand HomeViewCommand { get; }
+        public RelayCommand ShipBuilderCommand { get; }
+        public RelayCommand SettingsViewCommand { get; }
+        public RelayCommand AboutViewCommand { get; }
 
         public HomeViewModel HomeVM { get; set; }
         public ShipBuilderViewModel ShipBuilderVM { get; set; }
@@ -35,10 +34,12 @@ namespace Battleship.MVVM.ViewModel
 
             CurrentView = HomeVM;
 
-            HomeViewCommand = new RelayCommand(o => { 
+            HomeViewCommand = new RelayCommand(o =>
+            {
                 if (HomeVM.PrepGameVM == null) { CurrentView = HomeVM; }
                 else if (HomeVM.PrepGameVM.GameVM == null) { CurrentView = HomeVM.PrepGameVM; }
-                else CurrentView = HomeVM.PrepGameVM.GameVM; });
+                else CurrentView = HomeVM.PrepGameVM.GameVM;
+            });
             ShipBuilderCommand = new RelayCommand(o => { CurrentView = ShipBuilderVM; });
             SettingsViewCommand = new RelayCommand(o => { CurrentView = SettingsVM; });
             AboutViewCommand = new RelayCommand(o => { CurrentView = AboutVM; });

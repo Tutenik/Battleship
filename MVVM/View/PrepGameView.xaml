@@ -11,12 +11,12 @@
              xmlns:converter="clr-namespace:Battleship.MVVM.Converters"
              mc:Ignorable="d"
              d:DesignHeight="460"
-             d:DesignWidth="800"
-             x:Name="Window">
+             d:DesignWidth="800">
 
     <UserControl.Resources>
-        <converter:AddConverter x:Key="AddConverter"/>
+        <converter:AddConverter x:Key="AddConverter" />
         <converter:RectConverter x:Key="RectConverter" />
+        <converter:ExpressionConverter x:Key="ExpressionConverter" />
     </UserControl.Resources>
 
     <UserControl.InputBindings>
@@ -26,8 +26,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -36,18 +36,79 @@
         </Grid.RowDefinitions>
 
         <ListBox ItemsSource="{Binding Ships}"
-                 SelectedItem="{Binding SelectedShip, Mode=TwoWay}">
+                 SelectedItem="{Binding SelectedShip, Mode=TwoWay}"
+                 BorderThickness="0">
+
+            <ListBox.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="OverridesDefaultStyle"
+                            Value="True" />
+                    <Setter Property="Width"
+                            Value="10" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid Background="#1E1E1E">
+
+                                    <Track x:Name="PART_Track">
+                                        <Track.Thumb>
+                                            <Thumb x:Name="Thumb"
+                                                   Background="#47A6FF">
+                                                <Thumb.Template>
+                                                    <ControlTemplate TargetType="Thumb">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="5" />
+                                                    </ControlTemplate>
+                                                </Thumb.Template>
+                                            </Thumb>
+                                        </Track.Thumb>
+                                    </Track>
+
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Resources>
+
+            <ListBox.Background>
+                <LinearGradientBrush StartPoint="0 0"
+                                     EndPoint="1 2">
+
+                    <GradientStop Color="#232031"
+                                  Offset="0.0" />
+
+                    <GradientStop Color="#1B1825"
+                                  Offset="1.0" />
+                </LinearGradientBrush>
+            </ListBox.Background>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="5"
                             Padding="10"
-                            Background="Transparent">
+                            CornerRadius="10"
+                            BorderBrush="#47A6FF"
+                            BorderThickness="2">
+
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0 0"
+                                                 EndPoint="1 2">
+
+                                <GradientStop Color="#36304B"
+                                              Offset="0.0" />
+
+                                <GradientStop Color="#2D283E"
+                                              Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+
                         <Grid>
                             <ItemsControl ItemsSource="{Binding Cells}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <Grid helper:GridHelper.Rows="{Binding Rows}"
-                                              helper:GridHelper.Columns="{Binding Columns}"/>
+                                              helper:GridHelper.Columns="{Binding Columns}" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
 
@@ -62,13 +123,9 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="Black"
-                                                BorderThickness="2" >
-                                            
-                                            <Image Source="{Binding ImagePath}"
-                                                   MaxWidth="25"
-                                                   MaxHeight="25" />
-                                        </Border>
+                                        <Image Source="/Resources/Images/ShipCell.png"
+                                               MaxWidth="25"
+                                               MaxHeight="25" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -81,8 +138,7 @@
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Grid.Row="1">
-            <Button 
-                    Content="Randomize"
+            <Button Content="Randomize"
                     Command="{Binding RandomizeCommand}"
                     Style="{StaticResource RoundedGradientButton}">
                 <Button.Background>
@@ -99,7 +155,7 @@
                     <SolidColorBrush Color="White" />
                 </Button.Foreground>
             </Button>
-            
+
             <Button Content="Ready"
                     Command="{Binding ReadyCommand}"
                     Style="{StaticResource RoundedGradientButton}">
@@ -117,20 +173,20 @@
                     <SolidColorBrush Color="White" />
                 </Button.Foreground>
             </Button>
-                    
+
         </StackPanel>
-        
+
         <ContentControl Grid.Column="1"
                         Grid.RowSpan="99"
                         x:Name="GameGrid"
                         Content="{Binding GameBoardVM}"
-                        Width="400"
-                        Height="400" />
+                        Width="420"
+                        Height="420" />
 
         <Canvas Grid.Column="1"
                 Grid.RowSpan="99"
-                Width="{Binding ActualWidth, ElementName=GameGrid}"
-                Height="{Binding ActualHeight, ElementName=GameGrid}"
+                Width="{Binding Width, ElementName=GameGrid, Converter={StaticResource ExpressionConverter}, ConverterParameter='x - 20.0'}"
+                Height="{Binding Height, ElementName=GameGrid, Converter={StaticResource ExpressionConverter}, ConverterParameter='x - 20.0'}"
                 Background="Transparent">
 
             <ItemsControl ItemsSource="{Binding HoverShip.Cells}"
@@ -138,14 +194,23 @@
                           Canvas.Left="{Binding LeftCanvasPosition}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Rows="{Binding HoverShip.Rows}"
-                                     Columns="{Binding HoverShip.Columns}" />
+                        <Grid helper:GridHelper.Rows="{Binding HoverShip.Rows}"
+                              helper:GridHelper.Columns="{Binding HoverShip.Columns}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Grid.Row"
+                                Value="{Binding Row}" />
+                        <Setter Property="Grid.Column"
+                                Value="{Binding Column}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModel:CellViewModel}">
-                        <Image Source="{Binding ImagePath}"
+                        <Image Source="/Resources/Images/ShipCell.png"
                                Width="40"
                                Height="40" />
                     </DataTemplate>
@@ -161,11 +226,11 @@
                     <i:InvokeCommandAction Command="{Binding MouseMoveCommand}">
                     </i:InvokeCommandAction>
                 </i:EventTrigger>
-                
+
                 <i:EventTrigger EventName="MouseLeftButtonUp">
                     <i:InvokeCommandAction Command="{Binding MouseLeftButtonUpCommand}" />
                 </i:EventTrigger>
-                
+
                 <i:EventTrigger EventName="MouseRightButtonDown">
                     <i:InvokeCommandAction Command="{Binding MouseRightButtonDownCommand}" />
                 </i:EventTrigger>

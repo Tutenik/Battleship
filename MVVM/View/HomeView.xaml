@@ -15,50 +15,120 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ListBox ItemsSource="{Binding ShipSets}"
-                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Label Content="Select ship set:"
+               Grid.Row="0"
+               Margin="35 15 0 0"
+               FontSize="20"
+               Foreground="White" />
+
+        <ListBox Grid.Row="1"
+                 Margin="35"
+                 ItemsSource="{Binding ShipSets}"
+                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                 BorderThickness="0">
+
+            <ListBox.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="OverridesDefaultStyle"
+                            Value="True" />
+                    <Setter Property="Width"
+                            Value="10" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid Background="#1E1E1E">
+
+                                    <Track x:Name="PART_Track">
+                                        <Track.Thumb>
+                                            <Thumb x:Name="Thumb"
+                                                   Background="#47A6FF">
+                                                <Thumb.Template>
+                                                    <ControlTemplate TargetType="Thumb">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="5" />
+                                                    </ControlTemplate>
+                                                </Thumb.Template>
+                                            </Thumb>
+                                        </Track.Thumb>
+                                    </Track>
+
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Resources>
+
+            <ListBox.Background>
+                <LinearGradientBrush StartPoint="0 0"
+                                     EndPoint="1 2">
+
+                    <GradientStop Color="#232031"
+                                  Offset="0.0" />
+
+                    <GradientStop Color="#1B1825"
+                                  Offset="1.0" />
+                </LinearGradientBrush>
+            </ListBox.Background>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Margin="5"
                             Padding="10"
-                            Background="LightGray">
-                        <TextBlock Text="{Binding Name}" />
+                            CornerRadius="10"
+                            BorderBrush="#47A6FF"
+                            BorderThickness="2">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0 0"
+                                                 EndPoint="1 2">
+
+                                <GradientStop Color="#36304B"
+                                              Offset="0.0" />
+
+                                <GradientStop Color="#2D283E"
+                                              Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="20"
+                                   Foreground="White" />
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Border Width="400"
-                Height="200"
-                Grid.Column="1">
-            <Border.Background>
+
+
+        <Button Content="Play"
+                Grid.Column="1"
+                Grid.Row="1"
+                Width="200"
+                Height="65"
+                FontSize="40"
+                Command="{Binding PlayGameCommand}"
+                Style="{StaticResource RoundedGradientButton}">
+
+            <Button.Background>
                 <LinearGradientBrush StartPoint="0 0"
                                      EndPoint="1 2">
 
-                    <GradientStop Color="#5bc3ff"
+                    <GradientStop Color="#1FADFF"
                                   Offset="0.0" />
 
-                    <GradientStop Color="#3aa0ff"
+                    <GradientStop Color="#007EF5"
                                   Offset="1.0" />
                 </LinearGradientBrush>
-            </Border.Background>
+            </Button.Background>
 
-            <Border.Clip>
-                <RectangleGeometry RadiusX="10"
-                                   RadiusY="10"
-                                   Rect="0 0 400 200" />
-            </Border.Clip>
+            <Button.Foreground>
+                <SolidColorBrush Color="White" />
+            </Button.Foreground>
+        </Button>
 
-            <Button Content="Play"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Background="Transparent"
-                    Foreground="White"
-                    BorderThickness="0"
-                    FontSize="40"
-                    Margin="20 10 10 0"
-                    Command="{Binding PlayGameCommand}" />
-
-        </Border>
     </Grid>
 </UserControl>

@@ -1,6 +1,5 @@
-﻿using Battleship.MVVM.Model;
-using Battleship.Core;
-using System.IO;
+﻿using Battleship.Core;
+using Battleship.MVVM.Model;
 using System.Windows;
 
 namespace Battleship.MVVM.ViewModel

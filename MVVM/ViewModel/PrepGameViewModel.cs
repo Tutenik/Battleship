@@ -7,9 +7,9 @@ namespace Battleship.MVVM.ViewModel
 {
     public class PrepGameViewModel : ObservableObject
     {
-        private MainViewModel _mainViewModel;
-        private GameBoard _gameBoard;
-        private ShipSet _shipSet;
+        private readonly MainViewModel _mainViewModel;
+        private readonly GameBoard _gameBoard;
+        private readonly ShipSet _shipSet;
 
         private GameBoardViewModel _gameBoardVM;
         public GameBoardViewModel GameBoardVM
@@ -60,7 +60,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _leftCanvasPosizion = value;
-                OnPropertyChanged(nameof(LeftCanvasPosition));
+                OnPropertyChanged();
             }
         }
 
@@ -74,7 +74,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _topCanvasPosition = value;
-                OnPropertyChanged(nameof(TopCanvasPosition));
+                OnPropertyChanged();
             }
         }
 
@@ -88,7 +88,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _gridRow = value;
-                OnPropertyChanged(nameof(GridRow));
+                OnPropertyChanged();
             }
         }
 
@@ -102,7 +102,7 @@ namespace Battleship.MVVM.ViewModel
             set
             {
                 _gridColumn = value;
-                OnPropertyChanged(nameof(GridColumn));
+                OnPropertyChanged();
             }
         }
 
@@ -110,10 +110,10 @@ namespace Battleship.MVVM.ViewModel
         public Point MousePosition
         {
             get => ClampToBoard(
-                Offset(QuantizeToGrid(_mousePosition, 40), HoverShip), 
-                HoverShip?.Columns ?? 0, 
-                HoverShip?.Rows ?? 0, 
-                _gameBoard.Cells.GetLength(1), 
+                Offset(QuantizeToGrid(_mousePosition, 40), HoverShip),
+                HoverShip?.Columns ?? 0,
+                HoverShip?.Rows ?? 0,
+                _gameBoard.Cells.GetLength(1),
                 _gameBoard.Cells.GetLength(0));
             set
             {
@@ -144,7 +144,17 @@ namespace Battleship.MVVM.ViewModel
 
             Ships = new ObservableCollection<ShipViewModel>();
             foreach (var ship in selectedShipSet.Ships)
-                Ships.Add(new ShipViewModel(ship));
+            {
+                var shipVM = new ShipViewModel(ship);
+
+                if (shipVM.Rows > shipVM.Columns)
+                {
+                    Ship.RotateShip(ship);
+                    (shipVM.Columns, shipVM.Rows) = (shipVM.Rows, shipVM.Columns);
+                }
+
+                Ships.Add(shipVM);
+            }
 
             Ships = new ObservableCollection<ShipViewModel>(Ships.OrderByDescending(c => c.Cells.Count));
 
@@ -161,23 +171,12 @@ namespace Battleship.MVVM.ViewModel
         {
             if (HoverShip == null) return;
 
-            Ship.RotateShip(new Ship(
-                    HoverShip.Cells.Select(c => new Cell(c.Row, c.Column)).ToList()
-                ));
+            ShipViewModel.RotateShip(HoverShip);
 
-            int newRows = HoverShip.Cells.Max(c => c.Column) + 1;
-            int newCols = HoverShip.Cells.Max(c => c.Row) + 1;
-
-            HoverShip.Rows = newRows;
-            HoverShip.Columns = newCols;
-
-            foreach (var cell in HoverShip.Cells)
-            {
-                int temp = cell.Row;
-                cell.Row = cell.Column;
-                cell.Column = temp;
-            }
+            HoverShip.Rows = HoverShip.Cells.Max(c => c.Row) + 1;
+            HoverShip.Columns = HoverShip.Cells.Max(c => c.Column) + 1;
         }
+
         private void OnMouseMove()
         {
             TopCanvasPosition = MousePosition.Y * 40;
@@ -185,6 +184,7 @@ namespace Battleship.MVVM.ViewModel
             GridRow = (int)MousePosition.Y;
             GridColumn = (int)MousePosition.X;
         }
+
         private void OnShipPlace()
         {
 
@@ -207,6 +207,8 @@ namespace Battleship.MVVM.ViewModel
 
             SelectedShip = pickedUpShip;
             Ships.Add(pickedUpShip);
+
+            OnMouseMove();
         }
         private void OnRandomize()
         {
@@ -218,11 +220,11 @@ namespace Battleship.MVVM.ViewModel
         }
         private void OnReady()
         {
-            GameVM = new GameViewModel(_gameBoard, GameBoard.CreateRandomizedBoard(10, _shipSet));
+            GameVM = new GameViewModel(_mainViewModel, _gameBoard, GameBoard.CreateRandomizedBoard(10, _shipSet));
             _mainViewModel.ChangeCurrentView(GameVM);
         }
 
-        private Point QuantizeToGrid(Point position, double cellSize)
+        private static Point QuantizeToGrid(Point position, double cellSize)
         {
             int x = (int)(position.X / cellSize);
             int y = (int)(position.Y / cellSize);
@@ -230,13 +232,13 @@ namespace Battleship.MVVM.ViewModel
             return new Point(x, y);
         }
 
-        private Point Offset(Point position, ShipViewModel ship)
+        private static Point Offset(Point position, ShipViewModel ship)
         {
             if (ship == null) return new Point(position.X, position.Y);
             return new Point(position.X - ship.Columns / 2, position.Y - ship.Rows / 2);
         }
 
-        private Point ClampToBoard(Point gridPos, int shipWidth, int shipHeight, int boardRows, int boardColumns)
+        private static Point ClampToBoard(Point gridPos, int shipWidth, int shipHeight, int boardRows, int boardColumns)
         {
             int x = (int)gridPos.X;
             int y = (int)gridPos.Y;
@@ -262,10 +264,11 @@ namespace Battleship.MVVM.ViewModel
             var ship = _gameBoard.DetectShip(row, column);
 
             _gameBoard.RemoveShipFromGrid(ship);
+            var cells = Ship.GetRelativePositions(ship);
 
-            var shipCells = Ship.GetRelativePositions(ship);
+            //foreach ( var cell in cells) MessageBox.Show($"Cell: Row {cell.Row}, Column {cell.Column}");
 
-            return new ShipViewModel(ship);
+            return new ShipViewModel(new Ship(cells));
         }
     }
 }

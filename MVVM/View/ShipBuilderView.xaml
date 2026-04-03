@@ -23,40 +23,43 @@
         <Grid Grid.Column="0">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0"
-                        Width="180">
-                <Label Content="Select a brush:"
+                        Orientation="Horizontal">
+                <Label Content="Select brush:"
                        Foreground="White"
-                       FontSize="20" />
-                <ToggleButton Content="Ship"
-                              Style="{StaticResource ToggleButtonBrushTheme}"
-                              IsChecked="{Binding SelectedBrush,
+                       FontSize="20"
+                       Margin="0 15 15 0" />
+                <StackPanel>
+                    <ToggleButton Content="Ship"
+                                  Style="{StaticResource ToggleButtonBrushTheme}"
+                                  IsChecked="{Binding SelectedBrush,
                           Converter={StaticResource BrushToBool},
                           ConverterParameter=ShipBrush}" />
-                <ToggleButton Content="Eraser"
-                              Style="{StaticResource ToggleButtonBrushTheme}"
-                              IsChecked="{Binding SelectedBrush,
+                    <ToggleButton Content="Eraser"
+                                  Style="{StaticResource ToggleButtonBrushTheme}"
+                                  IsChecked="{Binding SelectedBrush,
                           Converter={StaticResource BrushToBool},
                           ConverterParameter=EraserBrush}" />
-            </StackPanel>
-            
-            <StackPanel Grid.Row="1"
-                        Width="180"
-                        VerticalAlignment="Center"
-                        Margin="0 15">
 
-                <Label Content="Enter the name &#x0a; of the ship set:"
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        Margin="15 15">
+
+                <Label Content="Enter ship set name:"
                        Foreground="White"
-                       FontSize="20"/>
+                       FontSize="20" />
 
                 <TextBox Text="{Binding ShipSetName, UpdateSourceTrigger=PropertyChanged}"
-                         FontSize="20"/>
+                         FontSize="20" />
 
             </StackPanel>
 
@@ -86,8 +89,8 @@
 
         <ContentControl Content="{Binding GameBoard}"
                         Grid.Column="1"
-                        Width="400"
-                        Height="400"
+                        Width="420"
+                        Height="420"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center" />
     </Grid>

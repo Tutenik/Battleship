@@ -6,126 +6,129 @@ namespace Battleship.MVVM.ViewModel
 {
     public class GameViewModel : ObservableObject
     {
-		private GameSession _gameSession;
+        private readonly GameSession _gameSession;
 
         private bool _isPlayerTurn = true;
-		public bool IsPlayerTurn
-		{
-			get
-			{
-				return _isPlayerTurn;
-			}
-			set
-			{
-				_isPlayerTurn = value;
-				OnPropertyChanged();
-			}
-		}
-
-		private double _percantage = 1.0;
-		public double Percentage
-		{
-			get
-			{
-				return _percantage;
-			}
-			set
-			{
-				_percantage = value;
-				OnPropertyChanged();
-			}
-		}
-
-		private string _statusMessage;
-		public string StatusMessage
+        public bool IsPlayerTurn
         {
-			get
-			{
-				return _statusMessage;
-			}
-			set
-			{
-				_statusMessage = value;
-				OnPropertyChanged(nameof(StatusMessage));
-			}
-		}
+            get
+            {
+                return _isPlayerTurn;
+            }
+            set
+            {
+                _isPlayerTurn = value;
+                OnPropertyChanged();
+            }
+        }
 
-		private bool _showPostGameStuff;
-		public bool ShowPostGameStuff
-		{
-			get
-			{
-				return _showPostGameStuff;
-			}
-			set
-			{
-				_showPostGameStuff = value;
-				OnPropertyChanged(nameof(ShowPostGameStuff));
-			}
-		}
+        private double _percantage = 1.0;
+        public double Percentage
+        {
+            get
+            {
+                return _percantage;
+            }
+            set
+            {
+                _percantage = value;
+                OnPropertyChanged();
+            }
+        }
 
-		private GameBoardViewModel _gameBoardVM;
-		public GameBoardViewModel GameBoardVM
-		{
-			get
-			{
-				return _gameBoardVM;
-			}
-			set
-			{
-				_gameBoardVM = value;
-				OnPropertyChanged();
-			}
-		}
+        private string _statusMessage;
+        public string StatusMessage
+        {
+            get
+            {
+                return _statusMessage;
+            }
+            set
+            {
+                _statusMessage = value;
+                OnPropertyChanged(nameof(StatusMessage));
+            }
+        }
 
-		private GameBoardViewModel _enemyGameBoardVM;
+        private bool _showPostGameStuff;
+        public bool ShowPostGameStuff
+        {
+            get
+            {
+                return _showPostGameStuff;
+            }
+            set
+            {
+                _showPostGameStuff = value;
+                OnPropertyChanged(nameof(ShowPostGameStuff));
+            }
+        }
+
+        private GameBoardViewModel _gameBoardVM;
+        public GameBoardViewModel GameBoardVM
+        {
+            get
+            {
+                return _gameBoardVM;
+            }
+            set
+            {
+                _gameBoardVM = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private GameBoardViewModel _enemyGameBoardVM;
         public GameBoardViewModel EnemyGameBoardVM
-		{
-			get
-			{
-				return _enemyGameBoardVM;
-			}
-			set
-			{
-				_enemyGameBoardVM = value;
-				OnPropertyChanged(nameof(EnemyGameBoardVM));
-			}
-		}
+        {
+            get
+            {
+                return _enemyGameBoardVM;
+            }
+            set
+            {
+                _enemyGameBoardVM = value;
+                OnPropertyChanged(nameof(EnemyGameBoardVM));
+            }
+        }
 
-		public RelayCommand BackToMenuCommand { get; }
+        public RelayCommand BackToMenuCommand { get; }
 
 
         public GameViewModel(MainViewModel mainViewModel, GameBoard gameBoard, GameBoard enemyGameBoard)
         {
-			_gameSession = new GameSession(gameBoard, enemyGameBoard, new EasyAi());
+            _gameSession = new GameSession(gameBoard, enemyGameBoard, new EasyAi());
 
             GameBoardVM = new GameBoardViewModel(_gameSession.Player1Board);
-			EnemyGameBoardVM = new GameBoardViewModel(_gameSession.Player2Board);
+            EnemyGameBoardVM = new GameBoardViewModel(_gameSession.Player2Board);
 
-			_gameSession.ShowOwnBoard();
+            _gameSession.ShowOwnBoard();
 
             _gameSession.PlayerTurnChanged += UpdatePlayerTurn;
-			_gameSession.RemainingPrecentageChanged += UpdateRemainingPercentage;
-			_gameSession.StatusMessageChanged += UpdateStatusMessage;
+            _gameSession.RemainingPrecentageChanged += UpdateRemainingPercentage;
+            _gameSession.StatusMessageChanged += UpdateStatusMessage;
 
-			BackToMenuCommand = new RelayCommand(_ => { mainViewModel.HomeVM = new HomeViewModel(mainViewModel); 
-														mainViewModel.CurrentView = mainViewModel.HomeVM; });
+            BackToMenuCommand = new RelayCommand(_ =>
+            {
+                mainViewModel.HomeVM = new HomeViewModel(mainViewModel);
+                mainViewModel.CurrentView = mainViewModel.HomeVM;
+            });
         }
 
-		private void UpdatePlayerTurn()
-		{
-			IsPlayerTurn = _gameSession.IsPlayer1Turn;
+        private void UpdatePlayerTurn()
+        {
+            IsPlayerTurn = _gameSession.IsPlayer1Turn;
         }
 
-		private void UpdateRemainingPercentage()
-		{
-			Percentage = _gameSession.RemainingPercentage;
+        private void UpdateRemainingPercentage()
+        {
+            Percentage = _gameSession.RemainingPercentage;
         }
 
         private void UpdateStatusMessage()
         {
             StatusMessage = _gameSession.StatusMessage;
-			ShowPostGameStuff = true;
+            ShowPostGameStuff = true;
         }
     }
 }

@@ -51,7 +51,7 @@
             </Grid.RowDefinitions>
 
             <!-- Ličta -->
-            <Grid Background="#22202f">
+            <Grid Background="#232031">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -119,13 +119,6 @@
                              Style="{StaticResource MenuButtomTheme}"
                              Command="{Binding ShipBuilderCommand}" />
 
-                <RadioButton Content="Settings"
-                             Foreground="White"
-                             FontSize="14"
-                             Width="100"
-                             Style="{StaticResource MenuButtomTheme}"
-                             Command="{Binding SettingsViewCommand}" />
-
                 <RadioButton Content="About"
                              Foreground="White"
                              FontSize="14"
@@ -141,7 +134,7 @@
                             VerticalAlignment="Center"
                             Content="{Binding CurrentView}"
                             Height="460"
-                            Width="840"/>
+                            Width="840" />
         </Grid>
     </Border>
 </Window>
