@@ -1,7 +1,6 @@
 ﻿using Battleship.Core;
 using Battleship.MVVM.AIStrategies;
 using Battleship.MVVM.Model;
-using System.Windows;
 
 namespace Battleship.MVVM.ViewModel
 {
@@ -19,7 +18,7 @@ namespace Battleship.MVVM.ViewModel
 			set
 			{
 				_isPlayerTurn = value;
-				OnPropertyChanged(nameof(IsPlayerTurn));
+				OnPropertyChanged();
 			}
 		}
 
@@ -33,7 +32,35 @@ namespace Battleship.MVVM.ViewModel
 			set
 			{
 				_percantage = value;
-				OnPropertyChanged(nameof(Percentage));
+				OnPropertyChanged();
+			}
+		}
+
+		private string _statusMessage;
+		public string StatusMessage
+        {
+			get
+			{
+				return _statusMessage;
+			}
+			set
+			{
+				_statusMessage = value;
+				OnPropertyChanged(nameof(StatusMessage));
+			}
+		}
+
+		private bool _showPostGameStuff;
+		public bool ShowPostGameStuff
+		{
+			get
+			{
+				return _showPostGameStuff;
+			}
+			set
+			{
+				_showPostGameStuff = value;
+				OnPropertyChanged(nameof(ShowPostGameStuff));
 			}
 		}
 
@@ -65,7 +92,10 @@ namespace Battleship.MVVM.ViewModel
 			}
 		}
 
-		public GameViewModel(GameBoard gameBoard, GameBoard enemyGameBoard)
+		public RelayCommand BackToMenuCommand { get; }
+
+
+        public GameViewModel(MainViewModel mainViewModel, GameBoard gameBoard, GameBoard enemyGameBoard)
         {
 			_gameSession = new GameSession(gameBoard, enemyGameBoard, new EasyAi());
 
@@ -76,6 +106,10 @@ namespace Battleship.MVVM.ViewModel
 
             _gameSession.PlayerTurnChanged += UpdatePlayerTurn;
 			_gameSession.RemainingPrecentageChanged += UpdateRemainingPercentage;
+			_gameSession.StatusMessageChanged += UpdateStatusMessage;
+
+			BackToMenuCommand = new RelayCommand(_ => { mainViewModel.HomeVM = new HomeViewModel(mainViewModel); 
+														mainViewModel.CurrentView = mainViewModel.HomeVM; });
         }
 
 		private void UpdatePlayerTurn()
@@ -86,6 +120,12 @@ namespace Battleship.MVVM.ViewModel
 		private void UpdateRemainingPercentage()
 		{
 			Percentage = _gameSession.RemainingPercentage;
+        }
+
+        private void UpdateStatusMessage()
+        {
+            StatusMessage = _gameSession.StatusMessage;
+			ShowPostGameStuff = true;
         }
     }
 }
