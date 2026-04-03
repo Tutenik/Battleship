@@ -1,5 +1,8 @@
 ﻿namespace Battleship.MVVM.Model
 {
+    /// <summary>
+    /// Types of brushes for painting.
+    /// </summary>
     public enum Brushes
     {
         ShipBrush,
@@ -7,17 +10,30 @@
         None
     }
 
+    /// <summary>
+    /// Used to paint on grid.
+    /// </summary>
     public class ShipPainter
     {
-        private GameBoard _board;
+        private readonly GameBoard _board;
 
-        public Brushes CurrentBrush { get; set;  }
+        /// <summary>
+        /// Gets current brush.
+        /// </summary>
+        public Brushes CurrentBrush { get; set; }
 
+        /// <summary>
+        /// BLU BLU BLU BLA BLA BLA BLE BLE BLE
+        /// </summary>
+        /// <param name="board"></param>
         public ShipPainter(GameBoard board)
         {
             _board = board;
         }
 
+        /// <summary>
+        /// Start painting.
+        /// </summary>
         public void StartPainting()
         {
             for (int i = 0; i < _board.Cells.GetLength(0); i++)
@@ -30,6 +46,9 @@
             }
         }
 
+        /// <summary>
+        /// Stop painting
+        /// </summary>
         public void StopPaintingCell()
         {
             for (int i = 0; i < _board.Cells.GetLength(0); i++)

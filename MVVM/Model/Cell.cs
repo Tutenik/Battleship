@@ -11,11 +11,6 @@
 
     public class Cell(int row, int column)
     {
-        /*
-         *      row    == i
-         *      column == j
-         */
-
         /// <summary>
         /// Represents an action to be invoked when a cell changes.
         /// </summary>
@@ -24,8 +19,12 @@
         /// context or event arguments; use with caution if more information about the change is required.</remarks>
         public event Action? CellChanged; //MVVM COTOJE AAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH
 
-        public event Action? CellEntered;
-        public event Action? CellExited;
+        /// <summary>
+        /// Occurs when a cell is clicked.
+        /// </summary>
+        /// <remarks>Subscribe to this event to handle user interactions with individual cells. The event
+        /// provides the clicked cell as a parameter. Event handlers can be added or removed using standard event
+        /// syntax.</remarks>
         public event Action<Cell>? CellClicked;
 
         private int _row = row;
@@ -38,7 +37,7 @@
         public int Row
         {
             get { return _row; }
-            set 
+            set
             {
                 _row = value;
                 CellChanged?.Invoke();
@@ -56,8 +55,8 @@
         public int Column
         {
             get { return _column; }
-            set 
-            { 
+            set
+            {
                 _column = value;
                 CellChanged?.Invoke();
             }
@@ -74,15 +73,18 @@
         public CellStatus Status
         {
             get { return _status; }
-            set 
+            set
             {
                 _status = value;
                 CellChanged?.Invoke();
             }
         }
 
-        public void OnCellEnter() => CellEntered?.Invoke();
-        public void OnCellExit() => CellExited?.Invoke();
+        /// <summary>
+        /// Raises the cell clicked event to notify subscribers that the cell has been clicked.
+        /// </summary>
+        /// <remarks>Use this method to trigger any logic that should occur when the cell is clicked. This
+        /// method does not perform any action if there are no subscribers to the event.</remarks>
         public void OnCellClicked() => CellClicked?.Invoke(this);
     }
 }

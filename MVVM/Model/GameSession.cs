@@ -1,6 +1,4 @@
 ﻿using Battleship.MVVM.AIStrategies;
-using System.Windows;
-using System.Linq;
 
 namespace Battleship.MVVM.Model
 {
@@ -9,43 +7,105 @@ namespace Battleship.MVVM.Model
         private CancellationTokenSource _ctsGameLoop;
         private CancellationTokenSource _ctsTimer;
 
-        private Random r = new Random();
+        private readonly int _turnTime = 10000;
+        private readonly Random _rand = new Random();
+        private readonly IAIStrategy _aiStrategy;
         private Cell _lastClickedCell;
+
+        /// <summary>
+        /// Gets the game board for player 1.
+        /// </summary>
         public GameBoard Player1Board { get; }
+
+        /// <summary>
+        /// Gets the game board for player 2.
+        /// </summary>
         public GameBoard Player2Board { get; }
 
-        IAIStrategy AIStrategy { get; }
-
-        public event Action PlayerTurnChanged;
+        /// <summary>
+        /// Gets the current status message for the operation or process.
+        /// </summary>
         public bool IsPlayer1Turn { get; private set; } = true;
 
-        private int _turnTime = 10000;
-
-        public event Action RemainingPrecentageChanged;
+        /// <summary>
+        /// Gets the percentage of the resource that remains available.
+        /// </summary>
         public double RemainingPercentage { get; private set; } = 1.0;
 
-        private GameSession(GameBoard player1Board, GameBoard player2Board)
-        {
-            Player1Board = player1Board;
-            Player2Board = player2Board;
+        /// <summary>
+        /// Gets the current status message for the operation or process.
+        /// </summary>
+        public string StatusMessage { get; private set; } = "";
 
-            SubscribeToClickEvents();
-        }
+        /// <summary>
+        /// Occurs when the active player changes during gameplay.
+        /// </summary>
+        /// <remarks>Subscribe to this event to be notified whenever the current player's turn ends and
+        /// control passes to another player. This event is typically used to update UI elements or trigger game logic
+        /// that depends on the active player.</remarks>
+        public event Action PlayerTurnChanged;
 
+        /// <summary>
+        /// Occurs when the remaining percentage value changes.
+        /// </summary>
+        /// <remarks>Subscribe to this event to be notified whenever the remaining percentage is updated.
+        /// This event is typically raised after the value has changed.</remarks>
+        public event Action RemainingPrecentageChanged;
+
+        /// <summary>
+        /// Occurs when the status message is updated.
+        /// </summary>
+        /// <remarks>Subscribe to this event to be notified whenever the status message changes. Event
+        /// handlers are invoked on the thread that raises the event; ensure thread safety when updating UI
+        /// elements.</remarks>
+        public event Action StatusMessageChanged;
+
+        /// <summary>
+        /// Initializes a new instance of the GameSession class with the specified player boards and AI strategy.
+        /// </summary>
+        /// <param name="player1Board">The game board assigned to player 1. Cannot be null.</param>
+        /// <param name="player2Board">The game board assigned to player 2. Cannot be null.</param>
+        /// <param name="aiStrategy">The AI strategy used to control the computer opponent. Cannot be null.</param>
         public GameSession(GameBoard player1Board, GameBoard player2Board, IAIStrategy aiStrategy)
         {
             Player1Board = player1Board;
             Player2Board = player2Board;
 
-            AIStrategy = aiStrategy;
+            _aiStrategy = aiStrategy;
 
-            ShowOwnBoard();
             Player1Board.InitializeAvailableCells();
             SubscribeToClickEvents();
+            PlayerTurnChanged += HandleTimer;
 
             _ = GameLoop();
-            PlayerTurnChanged += HandleTimer;
             _ = StartTimer(_turnTime);
+        }
+
+        /// <summary>
+        /// Resets the player's board to display only ship positions, hiding all other cell statuses.
+        /// </summary>
+        /// <remarks>Use this method to prepare the player's board for display by ensuring that only ship
+        /// locations are visible. This is typically called when updating the player's view to prevent revealing
+        /// additional information about the board state.</remarks>
+        public void ShowOwnBoard()
+        {
+            foreach (var cell in Player1Board.Cells)
+            {
+                cell.Status = cell.Status switch
+                {
+                    CellStatus.Ship => CellStatus.Ship,
+                    _ => CellStatus.Empty
+                };
+            }
+        }
+
+        /// <summary>
+        /// Stops the turn timer.
+        /// </summary>
+        /// <remarks>Call this method to cancel the active turn timer, preventing it from triggering a move skip.</remarks>
+        public void StopTimer()
+        {
+            _ctsTimer?.Cancel();
         }
 
         private void HandleTimer()
@@ -63,6 +123,7 @@ namespace Battleship.MVVM.Model
             }
 
         }
+
         private void UnsubscribeFromClickEvents()
         {
             foreach (var cell in Player2Board.Cells)
@@ -70,17 +131,7 @@ namespace Battleship.MVVM.Model
                 cell.CellClicked -= OnEnemyCellClicked;
             }
         }
-        public void ShowOwnBoard()
-        {
-            foreach (var cell in Player1Board.Cells)
-            {
-                cell.Status = cell.Status switch
-                {
-                    CellStatus.Ship => CellStatus.Ship,
-                    _ => CellStatus.Empty
-                };
-            }
-        }
+
         private void OnEnemyCellClicked(Cell cell)
         {
             if (_lastClickedCell == cell) return;
@@ -95,15 +146,11 @@ namespace Battleship.MVVM.Model
                 _ => cell.Status
             };
 
-            // invoked because of timer, and this is the easiest option
-            PlayerTurnChanged?.Invoke();
-
             if (cell.Status != CellStatus.Hit)
             {
                 IsPlayer1Turn = false;
-                PlayerTurnChanged?.Invoke();
             }
-
+            PlayerTurnChanged?.Invoke();
             foreach (var ship in Player2Board.Ships.Where(ship => ship.IsSunk))
             {
                 Player2Board.RevealShip(ship);
@@ -112,7 +159,7 @@ namespace Battleship.MVVM.Model
             CheckGameOver();
         }
 
-        public async Task GameLoop()
+        private async Task GameLoop()
         {
             _ctsGameLoop = new CancellationTokenSource();
             var token = _ctsGameLoop.Token;
@@ -125,18 +172,17 @@ namespace Battleship.MVVM.Model
                     {
                         do
                         {
-                            await Task.Delay(r.Next((int)(_turnTime * 0.02f), (int)(_turnTime * 0.55f)), token);
-                            // The same as before, rhis is besause of timer and this is the easiest way to update it
+                            await Task.Delay(_rand.Next((int)(_turnTime * 0.02f), (int)(_turnTime * 0.55f)), token);
                             PlayerTurnChanged?.Invoke();
                         }
-                        while (AIStrategy.MakeMove(Player1Board));
+                        while (_aiStrategy.MakeMove(Player1Board));
 
                         IsPlayer1Turn = true;
                         PlayerTurnChanged?.Invoke();
                     }
-                    CheckGameOver();
 
-                    await Task.Delay(200, token);
+                    CheckGameOver();
+                    await Task.Delay(50, token);
                 }
             }
             catch (TaskCanceledException)
@@ -145,14 +191,14 @@ namespace Battleship.MVVM.Model
             }
         }
 
-        public async Task StartTimer(int durationMs)
+        private async Task StartTimer(int durationMs)
         {
             _ctsTimer = new CancellationTokenSource();
             var token = _ctsTimer.Token;
 
             RemainingPercentage = 1.0;
 
-            int interval = 50; // update every 50ms
+            int interval = 50;
             double steps = durationMs / interval;
             double decrement = 1 / steps;
 
@@ -176,10 +222,6 @@ namespace Battleship.MVVM.Model
             }
             catch (TaskCanceledException) { }
         }
-        public void StopTimer()
-        {
-            _ctsTimer?.Cancel();
-        }
 
         private void SkipMove()
         {
@@ -189,17 +231,25 @@ namespace Battleship.MVVM.Model
 
         private void CheckGameOver()
         {
-            if (Player1Board.Ships.All(s => s.IsSunk) || Player2Board.Ships.All(s => s.IsSunk))
+            if (Player1Board.Ships.All(s => s.IsSunk))
             {
-                EndGame();
+                EndGame("You Lost");
+            }
+
+            if (Player2Board.Ships.All(s => s.IsSunk))
+            {
+                EndGame("You Won!");
             }
         }
 
-        private void EndGame()
+        private void EndGame(string statusMessage)
         {
             UnsubscribeFromClickEvents();
             StopTimer();
             _ctsGameLoop?.Cancel();
+
+            StatusMessage = statusMessage;
+            StatusMessageChanged?.Invoke();
         }
     }
 }

@@ -1,94 +1,62 @@
 ﻿namespace Battleship.MVVM.Model
 {
+    /// <summary>
+    /// Creates new ship.
+    /// </summary>
+    /// <param name="cells">The cells of the ship.</param>
     public class Ship
     {
-        public int Size => Cells.Count;
+        /// <summary>
+        /// Gets the list of cells of the ship.
+        /// </summary>
         public List<Cell> Cells { get; }
 
+        /// <summary>
+        /// Returns if the ship is sunk.
+        /// </summary>
         public bool IsSunk => Cells.All(c => c.Status == CellStatus.Hit);
-
-        public Ship() { Cells = new List<Cell>(); }
 
         public Ship(List<Cell> cells)
         {
             Cells = cells;
         }
 
-        public void RotateShip()
-        {
-
-            foreach (var cell in Cells)
-            {
-                int row = cell.Row;
-                cell.Row = cell.Column;
-                cell.Column = -row;
-            }
-
-            int minRow = Cells.Min(c => c.Row);
-            int minColumn = Cells.Min(c => c.Column);
-
-            foreach (var cell in Cells)
-            {
-                cell.Row -= minRow;
-                cell.Column -= minColumn;
-            }
-        }
-
-        public List<Cell> GetRelativePositions()
-        {
-            if (Cells == null || Cells.Count == 0)
-                return new List<Cell>();
-
-            // Find top-left (min X, then min Y)
-            var origin = Cells
-                .OrderBy(c => c.Row)
-                .ThenBy(c => c.Column)
-                .First();
-
-            return Cells
-                .Select(c => new Cell
-                (
-                    c.Row - origin.Row,
-                    c.Column - origin.Column
-                ))
-                .ToList();
-        }
-
+        /// <summary>
+        /// Rotates the ship 90 degrees.
+        /// </summary>
+        /// <param name="ship">The rotated ship</param>
+        /// <remarks>Modifies the ship values</remarks>
         public static void RotateShip(Ship ship)
         {
+            int maxRow = ship.Cells.Max(c => c.Row);
+
             foreach (var cell in ship.Cells)
             {
-                int row = cell.Row;
+                int oldRow = cell.Row;
+
                 cell.Row = cell.Column;
-                cell.Column = -row;
-            }
-
-            int minRow = ship.Cells.Min(c => c.Row);
-            int minColumn = ship.Cells.Min(c => c.Column);
-
-            foreach (var cell in ship.Cells)
-            {
-                cell.Row -= minRow;
-                cell.Column -= minColumn;
+                cell.Column = maxRow - oldRow;
             }
         }
 
+        /// <summary>
+        /// Gets relative positions of the ship.
+        /// </summary>
+        /// <param name="ship">The ship in question.</param>
+        /// <returns>Cells with relative positions.</returns>
         public static List<Cell> GetRelativePositions(Ship ship)
         {
             if (ship.Cells == null || ship.Cells.Count == 0)
                 return new List<Cell>();
 
-            // Find top-left (min X, then min Y)
-            var origin = ship.Cells
-                .OrderBy(c => c.Row)
-                .ThenBy(c => c.Column)
-                .First();
+            int minRow = ship.Cells.Min(c => c.Row);
+            int minColumn = ship.Cells.Min(c => c.Column);
 
             return ship.Cells
                 .Select(c => new Cell
                 (
-                    c.Row - origin.Row,
-                    c.Column - origin.Column
+                    c.Row - minRow,
+                    c.Column - minColumn
                 ))
                 .ToList();
         }
