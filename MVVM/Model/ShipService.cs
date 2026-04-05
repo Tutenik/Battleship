@@ -42,6 +42,10 @@ namespace Battleship.MVVM.Model
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
                 }
+                else if (!File.Exists(Path.Combine(path, "Default.json")))
+                {
+                    File.WriteAllText(Path.Combine(path, "Default.json"), GetDefaultJson());
+                }
 
 
                 return path;
