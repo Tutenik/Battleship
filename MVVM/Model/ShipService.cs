@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Windows;
 
 
 namespace Battleship.MVVM.Model
@@ -24,7 +25,24 @@ namespace Battleship.MVVM.Model
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
+
+                    string jsonPath = Path.Combine(path, "Default.json");
+
+                    if (!File.Exists(jsonPath))
+                    {
+                        File.WriteAllText(jsonPath, GetDefaultJson());
+                    }
+
+                    MessageBox.Show(
+                                $"A new ship set file has been created at:\n{path}\n\n" +
+                                $"If you previously had custom ship sets, they may not be included.\n" +
+                                $"Make sure the Resources folder is located in the same directory as the application (.exe).\n\n" +
+                                $"To restore your old ship sets, replace the newly created Resources folder with your original one.",
+                                "Information",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                 }
+
 
                 return path;
             }
@@ -66,7 +84,15 @@ namespace Battleship.MVVM.Model
                 WriteIndented = true
             });
 
-            File.WriteAllText(Path.Combine(FolderPath, path), json);
+            try
+            {
+                File.WriteAllText(Path.Combine(FolderPath, path), json);
+                MessageBox.Show("Ship set saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving ships: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         /// <summary>
@@ -86,5 +112,60 @@ namespace Battleship.MVVM.Model
             return [.. dto.Select(d => new Ship([.. d.Positions.Select(p => new Cell(p.X, p.Y))])
          )];
         }
+
+        private static string GetDefaultJson()
+        {
+            return @"[
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 0, ""Y"": 1 },
+      { ""X"": 0, ""Y"": 2 },
+      { ""X"": 0, ""Y"": 3 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 1, ""Y"": 0 },
+      { ""X"": 2, ""Y"": 0 },
+      { ""X"": 3, ""Y"": 0 },
+      { ""X"": 4, ""Y"": 0 },
+      { ""X"": 5, ""Y"": 0 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 0, ""Y"": 1 },
+      { ""X"": 0, ""Y"": 2 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 0, ""Y"": 1 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 0, ""Y"": 1 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 },
+      { ""X"": 1, ""Y"": 0 }
+    ]
+  },
+  {
+    ""Positions"": [
+      { ""X"": 0, ""Y"": 0 }
+    ]
+  }
+]";
+        }
     }
+
 }

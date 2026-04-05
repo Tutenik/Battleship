@@ -35,7 +35,7 @@ namespace Battleship.MVVM.ViewModel
         {
             _shipSets = new ObservableCollection<ShipSet>();
             InitShipSets();
-            SelectedItem = _shipSets.FirstOrDefault(ss => ss.Name == "Default", _shipSets[0]);
+            SelectedItem = _shipSets.First(ss => ss.Name == "Default");
             SetupWatcher();
 
             PlayGameCommand = new RelayCommand(_ =>

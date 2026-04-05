@@ -1,5 +1,6 @@
 ﻿using Battleship.Core;
 using Battleship.MVVM.Model;
+using System.IO;
 using System.Windows;
 
 namespace Battleship.MVVM.ViewModel
@@ -62,9 +63,15 @@ namespace Battleship.MVVM.ViewModel
 
             SaveShipsCommand = new RelayCommand(_ =>
             {
+                if (File.Exists(Path.Combine(ShipService.FolderPath, $"{ShipSetName?.Trim()}.json")))
+                {
+                    MessageBox.Show("A ship set with this name already exists. Please choose a different name.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ShipSetName = "";
+                    return;
+                }
+
                 ShipService.SaveShips($"{ShipSetName?.Trim()}.json",
                 _gb.DetectShips());
-                MessageBox.Show("Ship set saved successfully! or maybie not...", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             },
                 _ => !string.IsNullOrWhiteSpace(ShipSetName)
             );
