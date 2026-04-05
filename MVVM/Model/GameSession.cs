@@ -10,7 +10,6 @@ namespace Battleship.MVVM.Model
         private readonly int _turnTime = 10000;
         private readonly Random _rand = new Random();
         private readonly IAIStrategy _aiStrategy;
-        private Cell _lastClickedCell;
 
         /// <summary>
         /// Gets the game board for player 1.
@@ -134,10 +133,9 @@ namespace Battleship.MVVM.Model
 
         private void OnEnemyCellClicked(Cell cell)
         {
-            if (_lastClickedCell == cell) return;
             if (!IsPlayer1Turn) return;
+            if (cell.Status == CellStatus.Hit || cell.Status == CellStatus.Miss) return;
 
-            _lastClickedCell = cell;
             cell.Status = cell.Status switch
             {
                 CellStatus.Empty => CellStatus.Miss,
@@ -150,7 +148,9 @@ namespace Battleship.MVVM.Model
             {
                 IsPlayer1Turn = false;
             }
+
             PlayerTurnChanged?.Invoke();
+
             foreach (var ship in Player2Board.Ships.Where(ship => ship.IsSunk))
             {
                 Player2Board.RevealShip(ship);
