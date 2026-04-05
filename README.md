@@ -39,7 +39,7 @@ Separation of UI and logic using MVVM <br>
 Custom ship sets using .json files
 
 
-<img width="500" height="585" alt="image" src="https://github.com/user-attachments/assets/6a8f6d03-8f9d-4520-b4a2-c1ffd43658bb" /> ![arknights-arknights-endfield](https://github.com/user-attachments/assets/42bc4aa6-b53f-4828-885f-4bd0216a8b05)
+<img width="360" height="421" alt="image" src="https://github.com/user-attachments/assets/6a8f6d03-8f9d-4520-b4a2-c1ffd43658bb" /> ![arknights-arknights-endfield](https://github.com/user-attachments/assets/42bc4aa6-b53f-4828-885f-4bd0216a8b05)
 
 
 
