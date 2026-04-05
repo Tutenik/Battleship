@@ -6,18 +6,22 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	  <StartupObject>Battleship.App</StartupObject>
+	  <ApplicationIcon>Resources\Images\Rim.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\Images\EmptyCell.png" />
     <None Remove="Resources\Images\HitCell.png" />
     <None Remove="Resources\Images\MissedCell.png" />
+    <None Remove="Resources\Images\Rim.ico" />
     <None Remove="Resources\Images\ShipCell.png" />
     <None Remove="Resources\Images\ShipNeighbourCell.png" />
     <None Remove="Resources\ShipTemplates\Default.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Images\Rim.ico" />
     <Content Include="Resources\ShipTemplates\Default.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -41,6 +45,7 @@
     <Resource Include="Resources\Images\MissedCell.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Images\Rim.ico" />
     <Resource Include="Resources\Images\ShipCell.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
