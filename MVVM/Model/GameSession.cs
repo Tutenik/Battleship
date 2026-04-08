@@ -172,7 +172,7 @@ namespace Battleship.MVVM.Model
                     {
                         do
                         {
-                            await Task.Delay(_rand.Next((int)(_turnTime * 0.02f), (int)(_turnTime * 0.55f)), token);
+                            await Task.Delay(_rand.Next((int)(_turnTime * 0.02f), (int)(_turnTime * 0.60f)), token);
                             PlayerTurnChanged?.Invoke();
                         }
                         while (_aiStrategy.MakeMove(Player1Board));
@@ -210,15 +210,14 @@ namespace Battleship.MVVM.Model
 
                     RemainingPercentage -= decrement;
 
-                    if (RemainingPercentage < 0)
+                    if (RemainingPercentage <= 0)
                     {
                         RemainingPercentage = 0;
                         StopTimer();
+                        SkipMove();
                     }
                     RemainingPrecentageChanged?.Invoke();
-                }
-
-                SkipMove();
+                } 
             }
             catch (TaskCanceledException) { }
         }
